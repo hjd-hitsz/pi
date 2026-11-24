@@ -1,9 +1,9 @@
 import { Text } from "@earendil-works/pi-tui";
 import { describe, expect, test } from "vitest";
+import { CustomMessageComponent } from "../../tui/src/host/modes/interactive/components/custom-message.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import type { MarkdownTransformContext, MessageRenderer, MessageRenderOptions } from "../src/core/extensions/types.ts";
 import type { CustomMessage } from "../src/core/messages.ts";
-import { CustomMessageComponent } from "../src/modes/interactive/components/custom-message.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
 import { stripAnsi } from "../src/utils/ansi.ts";
 
 describe("CustomMessageComponent", () => {

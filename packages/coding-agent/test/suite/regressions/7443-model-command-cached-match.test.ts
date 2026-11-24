@@ -1,6 +1,6 @@
 import type { Api, Model } from "@earendil-works/pi-ai";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { InteractiveMode } from "../../../src/modes/interactive/interactive-mode.ts";
+import { InteractiveMode } from "../../../../tui/src/host/modes/interactive/interactive-mode.ts";
 import { createHarness, type Harness } from "../harness.ts";
 
 const findExactModelMatch = Reflect.get(InteractiveMode.prototype, "findExactModelMatch") as (

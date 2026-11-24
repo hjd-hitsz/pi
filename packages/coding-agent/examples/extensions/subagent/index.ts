@@ -24,15 +24,13 @@ import {
 	DEFAULT_MAX_BYTES,
 	DEFAULT_MAX_LINES,
 	type ExtensionAPI,
-	formatReadLineRange,
 	getAgentDir,
-	getMarkdownTheme,
-	type JsonAgentSessionEvent,
 	truncateHead,
 	withFileMutationQueue,
 } from "@earendil-works/pi-coding-agent";
 import { Container, Markdown, Spacer, Text } from "@earendil-works/pi-tui";
 import { Type } from "typebox";
+import { formatReadLineRange, getMarkdownTheme, type JsonAgentSessionEvent } from "../../../../tui/src/host/index.ts";
 import { type AgentConfig, type AgentScope, discoverAgents } from "./agents.ts";
 
 const MAX_PARALLEL_TASKS = 8;

@@ -5,18 +5,18 @@ import { stripVTControlCharacters } from "node:util";
 import { runInNewContext } from "node:vm";
 import type { TUI } from "@earendil-works/pi-tui";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { exportFromFile } from "../src/core/export-html/index.ts";
+import { exportFromFile } from "../../tui/src/host/core/export-html/index.ts";
+import { formatReadLineRange } from "../../tui/src/host/core/tools/render-utils.ts";
+import { readRenderers } from "../../tui/src/host/core/tools/renderers/index.ts";
+import { ToolExecutionComponent } from "../../tui/src/host/modes/interactive/components/tool-execution.ts";
+import { TreeSelectorComponent } from "../../tui/src/host/modes/interactive/components/tree-selector.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import {
 	CURRENT_SESSION_VERSION,
 	type SessionHeader,
 	SessionManager,
 	type SessionMessageEntry,
 } from "../src/core/session-manager.ts";
-import { createReadToolDefinition } from "../src/core/tools/read.ts";
-import { formatReadLineRange } from "../src/core/tools/render-utils.ts";
-import { ToolExecutionComponent } from "../src/modes/interactive/components/tool-execution.ts";
-import { TreeSelectorComponent } from "../src/modes/interactive/components/tree-selector.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
 
 interface HtmlViewer {
 	formatReadLineRange: typeof formatReadLineRange;
@@ -127,7 +127,7 @@ describe("read line range display", () => {
 			"call",
 			args,
 			{},
-			createReadToolDefinition(tempDir),
+			readRenderers,
 			// SAFETY: ToolExecutionComponent only calls ui.requestRender(), which this stub implements.
 			{ requestRender() {} } as TUI,
 			tempDir,

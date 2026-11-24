@@ -1,11 +1,11 @@
 import type { AssistantMessage } from "@earendil-works/pi-ai";
 import type { TuiMouseEvent } from "@earendil-works/pi-tui";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { AssistantMessageComponent } from "../src/modes/interactive/components/assistant-message.ts";
-import { UserMessageComponent } from "../src/modes/interactive/components/user-message.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
+import { AssistantMessageComponent } from "../../tui/src/host/modes/interactive/components/assistant-message.ts";
+import { UserMessageComponent } from "../../tui/src/host/modes/interactive/components/user-message.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
+import * as syntaxHighlight from "../../tui/src/host/utils/syntax-highlight.ts";
 import { stripAnsi } from "../src/utils/ansi.ts";
-import * as syntaxHighlight from "../src/utils/syntax-highlight.ts";
 
 const OSC133_ZONE_START = "\x1b]133;A\x07";
 const OSC133_ZONE_END = "\x1b]133;B\x07";

@@ -2,9 +2,9 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { InteractiveMode } from "../../tui/src/host/modes/interactive/interactive-mode.ts";
 import { type MissingSessionCwdChoice, MissingSessionCwdError } from "../src/core/session-cwd.ts";
 import { SessionManager } from "../src/core/session-manager.ts";
-import { InteractiveMode } from "../src/modes/interactive/interactive-mode.ts";
 
 type SwitchSession = (sessionPath: string, options?: { cwdOverride?: string }) => Promise<{ cancelled: boolean }>;
 

@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { KEYBINDINGS, useWindowsKeybindings } from "../src/core/keybindings.ts";
+import { KEYBINDINGS, useWindowsKeybindings } from "../../tui/src/host/core/keybindings.ts";
 
 describe("Windows keybinding defaults", () => {
 	it("uses Windows keybindings on native Windows", () => {
@@ -25,7 +25,7 @@ describe("Windows keybinding defaults", () => {
 		vi.stubEnv("WSL_DISTRO_NAME", "Ubuntu");
 		vi.resetModules();
 		try {
-			const { KEYBINDINGS: wslKeybindings } = await import("../src/core/keybindings.ts");
+			const { KEYBINDINGS: wslKeybindings } = await import("../../tui/src/host/core/keybindings.ts");
 			expect(wslKeybindings["app.clipboard.pasteImage"].defaultKeys).toEqual(["alt+v", "ctrl+v"]);
 		} finally {
 			vi.unstubAllEnvs();

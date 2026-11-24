@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ansiToHtml } from "../src/core/export-html/ansi-to-html.ts";
+import { ansiToHtml } from "../../tui/src/host/core/export-html/ansi-to-html.ts";
 
 const link = (url: string, text: string, end = "\x1b\\") => `\x1b]8;;${url}${end}${text}\x1b]8;;${end}`;
 

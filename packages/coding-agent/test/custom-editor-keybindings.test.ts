@@ -1,9 +1,9 @@
 import { setKeybindings, TuiMainScreen } from "@earendil-works/pi-tui";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { KeybindingsManager } from "../../tui/src/host/core/keybindings.ts";
+import { CustomEditor } from "../../tui/src/host/modes/interactive/components/custom-editor.ts";
 import { defaultEditorTheme } from "../../tui/test/test-themes.ts";
 import { VirtualTerminal } from "../../tui/test/virtual-terminal.ts";
-import { KeybindingsManager } from "../src/core/keybindings.ts";
-import { CustomEditor } from "../src/modes/interactive/components/custom-editor.ts";
 
 afterEach(() => {
 	setKeybindings(new KeybindingsManager());

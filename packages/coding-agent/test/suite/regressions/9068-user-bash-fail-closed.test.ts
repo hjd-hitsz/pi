@@ -1,8 +1,8 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
+import { InteractiveMode } from "../../../../tui/src/host/modes/interactive/interactive-mode.ts";
+import { runRpcMode } from "../../../../tui/src/host/modes/rpc/rpc-mode.ts";
 import type { AgentSessionRuntime } from "../../../src/core/agent-session-runtime.ts";
 import type { ExtensionAPI, UserBashEvent, UserBashEventResult } from "../../../src/core/extensions/types.ts";
-import { InteractiveMode } from "../../../src/modes/interactive/interactive-mode.ts";
-import { runRpcMode } from "../../../src/modes/rpc/rpc-mode.ts";
 import { createHarness, type Harness } from "../harness.ts";
 
 // Regression for https://github.com/earendil-works/pi/issues/9068
@@ -21,16 +21,16 @@ vi.mock("../../../src/core/output-guard.js", () => ({
 	},
 }));
 
-vi.mock("../../../src/modes/interactive/theme/theme.js", () => ({ theme: {} }));
+vi.mock("../../../../tui/src/host/modes/interactive/theme/theme.ts", () => ({ theme: {} }));
 
-vi.mock("../../../src/modes/interactive/components/bash-execution.js", () => ({
+vi.mock("../../../../tui/src/host/modes/interactive/components/bash-execution.ts", () => ({
 	BashExecutionComponent: class {
 		appendOutput(): void {}
 		setComplete(): void {}
 	},
 }));
 
-vi.mock("../../../src/modes/rpc/jsonl.js", () => ({
+vi.mock("../../../../tui/src/host/modes/rpc/jsonl.ts", () => ({
 	attachJsonlLineReader: vi.fn((_stream: NodeJS.ReadableStream, onLine: (line: string) => void) => {
 		rpcIo.lineHandler = onLine;
 		return () => {

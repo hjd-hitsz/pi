@@ -3,10 +3,10 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { setKeybindings, type TUI } from "@earendil-works/pi-tui";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { KeybindingsManager } from "../../../../tui/src/host/core/keybindings.ts";
+import { ModelSelectorComponent } from "../../../../tui/src/host/modes/interactive/components/model-selector.ts";
+import { initTheme } from "../../../../tui/src/host/modes/interactive/theme/theme.ts";
 import { AuthStorage } from "../../../src/core/auth-storage.ts";
-import { KeybindingsManager } from "../../../src/core/keybindings.ts";
-import { ModelSelectorComponent } from "../../../src/modes/interactive/components/model-selector.ts";
-import { initTheme } from "../../../src/modes/interactive/theme/theme.ts";
 import { stripAnsi } from "../../../src/utils/ansi.ts";
 import { createModelRegistry, getModelRuntime } from "../../model-runtime-test-utils.ts";
 

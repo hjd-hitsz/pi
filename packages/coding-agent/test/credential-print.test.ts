@@ -1,11 +1,11 @@
 import { InMemoryModelsStore } from "@earendil-works/pi-ai";
 import { describe, expect, test, vi } from "vitest";
-import { parseArgs } from "../src/cli/args.ts";
-import { AuthCommandError, isAuthCommandHelp, parseAuthCommand } from "../src/cli/auth-command.ts";
-import { resolveCredentialForPrint } from "../src/cli/credential-print.ts";
+import { parseArgs } from "../../tui/src/host/cli/args.ts";
+import { AuthCommandError, isAuthCommandHelp, parseAuthCommand } from "../../tui/src/host/cli/auth-command.ts";
+import { resolveCredentialForPrint } from "../../tui/src/host/cli/credential-print.ts";
+import { main } from "../../tui/src/host/main.ts";
 import { AuthStorage } from "../src/core/auth-storage.ts";
 import { ModelRuntime } from "../src/core/model-runtime.ts";
-import { main } from "../src/main.ts";
 
 async function createRuntime(credentials: AuthStorage): Promise<ModelRuntime> {
 	return ModelRuntime.create({

@@ -9,12 +9,12 @@ import {
 	TuiMainScreen,
 } from "@earendil-works/pi-tui";
 import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
+import { KeybindingsManager } from "../../tui/src/host/core/keybindings.ts";
+import { CustomEditor } from "../../tui/src/host/modes/interactive/components/custom-editor.ts";
+import { InteractiveMode } from "../../tui/src/host/modes/interactive/interactive-mode.ts";
+import { getEditorTheme, initTheme, type Theme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import { VirtualTerminal } from "../../tui/test/virtual-terminal.ts";
 import type { EditorFactory } from "../src/core/extensions/types.ts";
-import { KeybindingsManager } from "../src/core/keybindings.ts";
-import { CustomEditor } from "../src/modes/interactive/components/custom-editor.ts";
-import { InteractiveMode } from "../src/modes/interactive/interactive-mode.ts";
-import { getEditorTheme, initTheme, type Theme } from "../src/modes/interactive/theme/theme.ts";
 
 // Pastes over 10 lines collapse into a marker whose content only the receiving editor can expand.
 const COLLAPSED_PASTE_LINE_COUNT = 12;

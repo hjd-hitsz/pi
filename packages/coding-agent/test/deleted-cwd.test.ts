@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { main } from "../src/main.ts";
+import { main } from "../../tui/src/host/main.ts";
 
 // Regression test for https://github.com/earendil-works/pi/issues/11509
 describe("startup in a deleted working directory", () => {

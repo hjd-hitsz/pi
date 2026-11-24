@@ -125,7 +125,7 @@ stdenv.mkDerivation {
     # bash tool keep the user's node/npm (e.g. from mise or nvm). fd, ripgrep,
     # and the clipboard tools are Pi's own dependencies and take precedence.
     makeWrapper ${nodejs}/bin/node "$out/bin/pi" \
-      --add-flags "$out/lib/pi/node_modules/@earendil-works/pi-coding-agent/dist/bundle/cli.js" \
+      --add-flags "$out/lib/pi/node_modules/@earendil-works/pi-tui/dist/bundle/cli.js" \
       --suffix PATH : ${lib.makeBinPath [ nodejs ]} \
       --prefix PATH : ${
         lib.makeBinPath (

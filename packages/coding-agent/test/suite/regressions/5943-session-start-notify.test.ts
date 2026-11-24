@@ -1,9 +1,9 @@
 import { fauxAssistantMessage } from "@earendil-works/pi-ai";
 import { Container, Text } from "@earendil-works/pi-tui";
 import { describe, expect, it, vi } from "vitest";
+import { InteractiveMode } from "../../../../tui/src/host/modes/interactive/interactive-mode.ts";
+import { initTheme } from "../../../../tui/src/host/modes/interactive/theme/theme.ts";
 import type { AgentSessionEvent } from "../../../src/core/agent-session.ts";
-import { InteractiveMode } from "../../../src/modes/interactive/interactive-mode.ts";
-import { initTheme } from "../../../src/modes/interactive/theme/theme.ts";
 import { createHarness, createTestUiContext } from "../harness.ts";
 
 type LoadedResourcesResult<T> = { [K in keyof T]: T[K] } & { diagnostics: [] };

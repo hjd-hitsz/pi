@@ -5,6 +5,8 @@ import { chmodSync, existsSync, mkdirSync, readFileSync, rmSync, symlinkSync, wr
 import { tmpdir } from "os";
 import { join } from "path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { ToolExecutionComponent } from "../../tui/src/host/modes/interactive/components/tool-execution.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import { executeBashWithOperations } from "../src/core/bash-executor.ts";
 import type { ExtensionToolContext } from "../src/core/extensions/types.ts";
 import {
@@ -34,8 +36,6 @@ import {
 	createReadTool,
 	createWriteTool,
 } from "../src/index.ts";
-import { ToolExecutionComponent } from "../src/modes/interactive/components/tool-execution.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
 import * as shellModule from "../src/utils/shell.ts";
 
 const readTool = createReadTool(process.cwd());

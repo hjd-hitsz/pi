@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
+import { InteractiveMode } from "../../tui/src/host/modes/interactive/interactive-mode.ts";
 import { SessionImportFileNotFoundError } from "../src/core/agent-session-runtime.ts";
 import type { MissingSessionCwdChoice } from "../src/core/session-cwd.ts";
-import { InteractiveMode } from "../src/modes/interactive/interactive-mode.ts";
 
 type PathCommand = "/export" | "/import";
 

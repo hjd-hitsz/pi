@@ -2,15 +2,18 @@ import { join, resolve } from "node:path";
 import { resetCapabilitiesCache, setCapabilities, Text, type TUI, type TuiMouseEvent } from "@earendil-works/pi-tui";
 import { Type } from "typebox";
 import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
-
+import {
+	createShellRenderers,
+	readRenderers,
+	withBuiltInRenderers,
+	writeRenderers,
+} from "../../tui/src/host/core/tools/renderers/index.ts";
+import { ToolExecutionComponent } from "../../tui/src/host/modes/interactive/components/tool-execution.ts";
+import { initTheme, theme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import { getReadmePath } from "../src/config.ts";
 import type { ToolDefinition } from "../src/core/extensions/types.ts";
 import { type BashOperations, createBashToolDefinition } from "../src/core/tools/bash.ts";
 import { createReadTool, createReadToolDefinition } from "../src/core/tools/read.ts";
-import { withBuiltInRenderers } from "../src/core/tools/renderers/index.ts";
-import { createWriteToolDefinition } from "../src/core/tools/write.ts";
-import { ToolExecutionComponent } from "../src/modes/interactive/components/tool-execution.ts";
-import { initTheme, theme } from "../src/modes/interactive/theme/theme.ts";
 import { stripAnsi } from "../src/utils/ansi.ts";
 
 function createBaseToolDefinition(name = "custom_tool"): ToolDefinition {
@@ -206,7 +209,7 @@ describe("ToolExecutionComponent parity", () => {
 			"tool-bash-1b",
 			{ command: "generate output" },
 			{},
-			tool,
+			createShellRenderers("$"),
 			createFakeTui(),
 			process.cwd(),
 		);
@@ -241,7 +244,7 @@ describe("ToolExecutionComponent parity", () => {
 			"tool-bash-duration",
 			{ command: "long-running-command" },
 			{},
-			createBashToolDefinition(process.cwd(), { exposeSessionEnvironment: false }),
+			createShellRenderers("$"),
 			createFakeTui(),
 			process.cwd(),
 		);
@@ -272,7 +275,7 @@ describe("ToolExecutionComponent parity", () => {
 				"tool-bash-recorded",
 				{ command: "sleep 4" },
 				{},
-				createBashToolDefinition(process.cwd(), { exposeSessionEnvironment: false }),
+				createShellRenderers("$"),
 				createFakeTui(),
 				process.cwd(),
 			);
@@ -289,13 +292,13 @@ describe("ToolExecutionComponent parity", () => {
 		expect(render(false)).toContain("Took 4.2s");
 	});
 
-	test("does not duplicate built-in headers when passed the active built-in definition", () => {
+	test("does not duplicate built-in headers when passed the built-in renderer", () => {
 		const component = new ToolExecutionComponent(
 			"read",
 			"tool-4",
 			{ path: "README.md" },
 			{},
-			createReadToolDefinition(process.cwd()),
+			readRenderers,
 			createFakeTui(),
 			process.cwd(),
 		);
@@ -311,7 +314,7 @@ describe("ToolExecutionComponent parity", () => {
 			"tool-read-null-range",
 			{ path: "src/example.ts", offset: null, limit: null },
 			{},
-			createReadToolDefinition(process.cwd()),
+			readRenderers,
 			createFakeTui(),
 			process.cwd(),
 		);
@@ -521,7 +524,7 @@ describe("ToolExecutionComponent parity", () => {
 			"tool-7",
 			{ path: "README.md", content: "one\ntwo\n" },
 			{},
-			createWriteToolDefinition(process.cwd()),
+			writeRenderers,
 			createFakeTui(),
 			process.cwd(),
 		);
@@ -533,7 +536,7 @@ describe("ToolExecutionComponent parity", () => {
 
 	// #9265: every argument delta re-ran the call renderer; a streamed `write` re-highlighted its whole content each time.
 	test("renders streamed partial arguments once per frame, with the latest arguments", () => {
-		const write = createWriteToolDefinition(process.cwd());
+		const write = writeRenderers;
 		let renderCalls = 0;
 		const counted: typeof write = {
 			...write,
@@ -590,7 +593,7 @@ describe("ToolExecutionComponent parity", () => {
 			"tool-8",
 			{ path: "notes.txt" },
 			{},
-			createReadToolDefinition(process.cwd()),
+			readRenderers,
 			createFakeTui(),
 			process.cwd(),
 		);
@@ -611,7 +614,7 @@ describe("ToolExecutionComponent parity", () => {
 			"tool-read-error-highlighting",
 			{ path: "config.exs", offset: 120, limit: 130 },
 			{},
-			createReadToolDefinition(process.cwd()),
+			readRenderers,
 			createFakeTui(),
 			process.cwd(),
 		);
@@ -629,7 +632,7 @@ describe("ToolExecutionComponent parity", () => {
 			"tool-click-expand",
 			{ path: "notes.txt" },
 			{},
-			createReadToolDefinition(process.cwd()),
+			readRenderers,
 			createFakeTui(),
 			process.cwd(),
 		);
@@ -665,7 +668,7 @@ describe("ToolExecutionComponent parity", () => {
 			"tool-ordinary-read-collapsed",
 			{ path: "notes.txt" },
 			{},
-			createReadToolDefinition(process.cwd()),
+			readRenderers,
 			createFakeTui(),
 			process.cwd(),
 		);
@@ -732,7 +735,7 @@ describe("ToolExecutionComponent parity", () => {
 				`tool-compact-${scenario.title}`,
 				{ path: scenario.path },
 				{},
-				createReadToolDefinition(process.cwd()),
+				readRenderers,
 				createFakeTui(),
 				process.cwd(),
 			);
@@ -764,7 +767,7 @@ describe("ToolExecutionComponent parity", () => {
 				`tool-compact-range-${scenario.title}`,
 				{ path: scenario.path, offset: 120, limit: 210 },
 				{},
-				createReadToolDefinition(process.cwd()),
+				readRenderers,
 				createFakeTui(),
 				process.cwd(),
 			);

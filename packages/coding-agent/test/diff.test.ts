@@ -1,6 +1,6 @@
 import { beforeAll, describe, expect, it } from "vitest";
-import { renderDiff } from "../src/modes/interactive/components/diff.ts";
-import { initTheme, theme } from "../src/modes/interactive/theme/theme.ts";
+import { renderDiff } from "../../tui/src/host/modes/interactive/components/diff.ts";
+import { initTheme, theme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import { stripAnsi } from "../src/utils/ansi.ts";
 
 describe("renderDiff", () => {

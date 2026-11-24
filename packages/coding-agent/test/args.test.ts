@@ -1,5 +1,5 @@
 import { describe, expect, test } from "vitest";
-import { normalizeSessionName, parseArgs } from "../src/cli/args.ts";
+import { normalizeSessionName, parseArgs } from "../../tui/src/host/cli/args.ts";
 
 describe("parseArgs", () => {
 	describe("--version flag", () => {

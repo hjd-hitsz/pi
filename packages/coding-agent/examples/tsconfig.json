@@ -172,6 +172,9 @@
 			"@earendil-works/pi-coding-agent/hooks": [
 				"../../../packages/coding-agent/src/core/hooks/index.ts"
 			],
+			"@earendil-works/pi-coding-agent/host-support/*": [
+				"../../../packages/coding-agent/src/*.ts"
+			],
 			"@earendil-works/pi-coding-agent/*": [
 				"../../../packages/coding-agent/src/*"
 			],
@@ -180,6 +183,9 @@
 			],
 			"@earendil-works/pi-tui": [
 				"../../../packages/tui/src/index.ts"
+			],
+			"@earendil-works/pi-tui/host": [
+				"../../../packages/tui/src/host/index.ts"
 			],
 			"@earendil-works/pi-tui/*": [
 				"../../../packages/tui/src/*"

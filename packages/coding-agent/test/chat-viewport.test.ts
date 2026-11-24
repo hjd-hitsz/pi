@@ -1,6 +1,6 @@
 import { Container } from "@earendil-works/pi-tui";
 import { describe, expect, test } from "vitest";
-import { createChatViewport } from "../src/modes/interactive/chat-viewport.ts";
+import { createChatViewport } from "../../tui/src/host/modes/interactive/chat-viewport.ts";
 
 describe("chat viewport", () => {
 	test("defaults the transcript scrollbar to auto and accepts overrides", () => {

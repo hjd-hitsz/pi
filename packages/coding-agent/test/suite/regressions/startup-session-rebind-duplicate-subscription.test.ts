@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { InteractiveMode } from "../../../src/modes/interactive/interactive-mode.ts";
+import { InteractiveMode } from "../../../../tui/src/host/modes/interactive/interactive-mode.ts";
 
 type RebindContext = {
 	session: object;

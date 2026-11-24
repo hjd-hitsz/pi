@@ -1,15 +1,15 @@
 import { stripVTControlCharacters } from "node:util";
 import { CURSOR_MARKER, setKeybindings, visibleWidth } from "@earendil-works/pi-tui";
 import { beforeAll, beforeEach, describe, expect, test } from "vitest";
-import { KeybindingsManager } from "../src/core/keybindings.ts";
+import { KeybindingsManager } from "../../tui/src/host/core/keybindings.ts";
+import { TreeSelectorComponent } from "../../tui/src/host/modes/interactive/components/tree-selector.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import type {
 	ModelChangeEntry,
 	SessionEntry,
 	SessionMessageEntry,
 	SessionTreeNode,
 } from "../src/core/session-manager.ts";
-import { TreeSelectorComponent } from "../src/modes/interactive/components/tree-selector.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
 
 beforeAll(() => {
 	initTheme("dark");

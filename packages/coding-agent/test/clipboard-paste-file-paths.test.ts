@@ -1,5 +1,5 @@
 import { beforeEach, expect, test, vi } from "vitest";
-import { InteractiveMode } from "../src/modes/interactive/interactive-mode.ts";
+import { InteractiveMode } from "../../tui/src/host/modes/interactive/interactive-mode.ts";
 
 const mocks = vi.hoisted(() => ({
 	readClipboardFilePaths: vi.fn<() => Promise<string[] | null>>(),

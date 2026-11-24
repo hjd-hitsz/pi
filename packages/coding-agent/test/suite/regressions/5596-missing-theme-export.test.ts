@@ -4,12 +4,13 @@ import { join } from "node:path";
 import { Agent } from "@earendil-works/pi-agent-core";
 import { fauxAssistantMessage, registerFauxProvider, streamSimple } from "@earendil-works/pi-ai/compat";
 import { afterEach, describe, expect, it } from "vitest";
+import { exportAgentSessionToHtml } from "../../../../tui/src/host/core/export-html/index.ts";
+import { initTheme } from "../../../../tui/src/host/modes/interactive/theme/theme.ts";
 import { AgentSession } from "../../../src/core/agent-session.ts";
 import { AuthStorage } from "../../../src/core/auth-storage.ts";
 import { convertToLlm } from "../../../src/core/messages.ts";
 import { SessionManager } from "../../../src/core/session-manager.ts";
 import { SettingsManager } from "../../../src/core/settings-manager.ts";
-import { initTheme } from "../../../src/modes/interactive/theme/theme.ts";
 import { createInMemoryModelRegistry, getModelRuntime } from "../../model-runtime-test-utils.ts";
 import { createTestResourceLoader } from "../../utilities.ts";
 
@@ -83,7 +84,7 @@ describe("regression #5596: missing configured theme export", () => {
 		initTheme(settingsManager.getTheme());
 
 		const outputPath = join(tempDir, "export.html");
-		await expect(session.exportToHtml(outputPath)).resolves.toBe(outputPath);
+		await expect(exportAgentSessionToHtml(session, outputPath)).resolves.toBe(outputPath);
 		expect(existsSync(outputPath)).toBe(true);
 		expect(settingsManager.getTheme()).toBe("missing-theme");
 	});

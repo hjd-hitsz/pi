@@ -1,9 +1,7 @@
 import type { Component, Terminal, TUI, WheelScrollLines } from "@earendil-works/pi-tui";
 import { Container, getKeybindings, isViewportTUI, ScrollView, setKeybindings, Text } from "@earendil-works/pi-tui";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { VirtualTerminal } from "../../tui/test/virtual-terminal.ts";
-import { KeybindingsManager } from "../src/core/keybindings.ts";
-import type { FullscreenExitOutput, TuiMode } from "../src/core/settings-manager.ts";
+import { KeybindingsManager } from "../../tui/src/host/core/keybindings.ts";
 import {
 	BranchSummaryStatusIndicator,
 	CompactionStatusIndicator,
@@ -11,13 +9,15 @@ import {
 	type StatusIndicator,
 	type StatusIndicatorKind,
 	WorkingStatusIndicator,
-} from "../src/modes/interactive/components/status-indicator.ts";
+} from "../../tui/src/host/modes/interactive/components/status-indicator.ts";
 import {
 	createInteractiveTui,
 	createInteractiveTuiReference,
 	InteractiveMode,
-} from "../src/modes/interactive/interactive-mode.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
+} from "../../tui/src/host/modes/interactive/interactive-mode.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
+import { VirtualTerminal } from "../../tui/test/virtual-terminal.ts";
+import type { FullscreenExitOutput, TuiMode } from "../src/core/settings-manager.ts";
 
 const clipboardMocks = vi.hoisted(() => ({
 	copyToClipboard: vi.fn<(text: string) => Promise<void>>(),

@@ -3,8 +3,8 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { InMemoryModelsStore, type Model, type Provider } from "@earendil-works/pi-ai";
 import { describe, expect, test, vi } from "vitest";
-import { runAuthLogin } from "../src/cli/auth-login.ts";
-import type { LoginTerminal } from "../src/cli/auth-terminal.ts";
+import { runAuthLogin } from "../../tui/src/host/cli/auth-login.ts";
+import type { LoginTerminal } from "../../tui/src/host/cli/auth-terminal.ts";
 import { AuthStorage } from "../src/core/auth-storage.ts";
 import { CredentialSynchronizationError, ModelRuntime } from "../src/core/model-runtime.ts";
 

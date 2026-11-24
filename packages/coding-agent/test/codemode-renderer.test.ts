@@ -2,12 +2,12 @@ import { stripVTControlCharacters } from "node:util";
 import type { AgentToolResult } from "@earendil-works/pi-agent-core";
 import type { Component, TUI } from "@earendil-works/pi-tui";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { codemodeRenderers } from "../../tui/src/host/extensions/codemode/renderer.ts";
+import { keyHint, keyText } from "../../tui/src/host/modes/interactive/components/keybinding-hints.ts";
+import { ToolExecutionComponent } from "../../tui/src/host/modes/interactive/components/tool-execution.ts";
+import { initTheme, theme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import type { ToolRenderContext } from "../src/core/extensions/types.ts";
-import { codemodeRenderers } from "../src/extensions/codemode/renderer.ts";
 import type { CodemodeToolDetails } from "../src/extensions/codemode/tool.ts";
-import { keyHint, keyText } from "../src/modes/interactive/components/keybinding-hints.ts";
-import { ToolExecutionComponent } from "../src/modes/interactive/components/tool-execution.ts";
-import { initTheme, theme } from "../src/modes/interactive/theme/theme.ts";
 
 function render(
 	result: AgentToolResult<CodemodeToolDetails | undefined>,

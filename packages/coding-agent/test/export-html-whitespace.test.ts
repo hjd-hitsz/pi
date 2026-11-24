@@ -1,14 +1,14 @@
 import type { Component } from "@earendil-works/pi-tui";
 import { readFileSync } from "fs";
 import { describe, expect, it } from "vitest";
-import { ansiLinesToHtml } from "../src/core/export-html/ansi-to-html.ts";
-import { createToolHtmlRenderer } from "../src/core/export-html/tool-renderer.ts";
+import { ansiLinesToHtml } from "../../tui/src/host/core/export-html/ansi-to-html.ts";
+import { createToolHtmlRenderer } from "../../tui/src/host/core/export-html/tool-renderer.ts";
+import type { Theme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import type { ToolDefinition } from "../src/core/extensions/types.ts";
-import type { Theme } from "../src/modes/interactive/theme/theme.ts";
 
 describe("export HTML tool output whitespace", () => {
 	it("preserves whitespace for plain-text tool output lines without preserving template whitespace", () => {
-		const css = readFileSync(new URL("../src/core/export-html/template.css", import.meta.url), "utf-8");
+		const css = readFileSync(new URL("../../tui/src/host/core/export-html/template.css", import.meta.url), "utf-8");
 
 		expect(css).toMatch(
 			/\.output-preview > div:not\(\.expand-hint\),\s*\.output-full > div:not\(\.expand-hint\) \{[\s\S]*?white-space:\s*pre-wrap;/,

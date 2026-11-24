@@ -1,10 +1,10 @@
 import type { Api, Model } from "@earendil-works/pi-ai";
 import { setKeybindings } from "@earendil-works/pi-tui";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { KeybindingsManager } from "../../../src/core/keybindings.ts";
-import { ScopedModelsSelectorComponent } from "../../../src/modes/interactive/components/scoped-models-selector.ts";
-import { InteractiveMode } from "../../../src/modes/interactive/interactive-mode.ts";
-import { initTheme, theme } from "../../../src/modes/interactive/theme/theme.ts";
+import { KeybindingsManager } from "../../../../tui/src/host/core/keybindings.ts";
+import { ScopedModelsSelectorComponent } from "../../../../tui/src/host/modes/interactive/components/scoped-models-selector.ts";
+import { InteractiveMode } from "../../../../tui/src/host/modes/interactive/interactive-mode.ts";
+import { initTheme, theme } from "../../../../tui/src/host/modes/interactive/theme/theme.ts";
 import { stripAnsi } from "../../../src/utils/ansi.ts";
 import { createHarness, type Harness } from "../harness.ts";
 

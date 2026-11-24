@@ -3,10 +3,10 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { resetCapabilitiesCache, setCapabilityOverrides } from "@earendil-works/pi-tui";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { createThemeReader, setThemeJsonValidator } from "../../tui/src/host/modes/interactive/theme/theme.ts";
+import { validateThemeJson } from "../../tui/src/host/modes/interactive/theme/theme-schema.ts";
 import { DefaultResourceLoader } from "../src/core/resource-loader.ts";
 import { SettingsManager } from "../src/core/settings-manager.ts";
-import { setThemeJsonValidator } from "../src/modes/interactive/theme/theme.ts";
-import { validateThemeJson } from "../src/modes/interactive/theme/theme-schema.ts";
 
 setThemeJsonValidator(validateThemeJson);
 
@@ -31,7 +31,7 @@ describe("DefaultResourceLoader theme color mode", () => {
 		mkdirSync(cwd, { recursive: true });
 
 		themeJson = JSON.parse(
-			readFileSync(join(process.cwd(), "src", "modes", "interactive", "theme", "dark.json"), "utf-8"),
+			readFileSync(join(process.cwd(), "../tui/src/host/modes", "interactive", "theme", "dark.json"), "utf-8"),
 		) as TestThemeJson;
 		themeJson.name = "capability-test";
 		themeJson.colors.userMessageBg = "#3c3544";
@@ -72,6 +72,7 @@ describe("DefaultResourceLoader theme color mode", () => {
 				agentDir,
 				settingsManager: SettingsManager.inMemory({ terminal: { trueColor: setting } }),
 				additionalThemePaths: [themePath],
+				createThemeReader,
 				noExtensions: true,
 				noSkills: true,
 				noPromptTemplates: true,
@@ -97,6 +98,7 @@ describe("DefaultResourceLoader theme color mode", () => {
 			agentDir,
 			settingsManager,
 			additionalThemePaths: [themePath],
+			createThemeReader,
 			noExtensions: true,
 			noSkills: true,
 			noPromptTemplates: true,
@@ -118,6 +120,7 @@ describe("DefaultResourceLoader theme color mode", () => {
 			agentDir,
 			settingsManager: SettingsManager.inMemory(),
 			additionalThemePaths: [themePath],
+			createThemeReader,
 			noExtensions: true,
 			noSkills: true,
 			noPromptTemplates: true,

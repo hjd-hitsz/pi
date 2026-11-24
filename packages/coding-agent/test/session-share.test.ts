@@ -12,8 +12,8 @@ const childProcessMocks = vi.hoisted(() => ({
 
 vi.mock("node:child_process", () => childProcessMocks);
 
-import { shareSession } from "../src/modes/interactive/session-share.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
+import { shareSession } from "../../tui/src/host/modes/interactive/session-share.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 
 function deferred(): { promise: Promise<void>; resolve: () => void } {
 	let resolve!: () => void;

@@ -1,6 +1,6 @@
 import { resolve } from "node:path";
 import { describe, expect, test } from "vitest";
-import { runClipboardCommand } from "../src/utils/clipboard-command.ts";
+import { runClipboardCommand } from "../../tui/src/host/utils/clipboard-command.ts";
 
 describe("clipboard commands", () => {
 	test("preserves binary output and distinguishes empty success from failure", async () => {

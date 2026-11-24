@@ -7,14 +7,14 @@ import {
 	TuiMainScreen,
 } from "@earendil-works/pi-tui";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+import { KeybindingsManager } from "../../tui/src/host/core/keybindings.ts";
+import { reportBug } from "../../tui/src/host/modes/interactive/bug-report.ts";
+import { ExtensionEditorComponent } from "../../tui/src/host/modes/interactive/components/extension-editor.ts";
+import { ExtensionSelectorComponent } from "../../tui/src/host/modes/interactive/components/extension-selector.ts";
+import { getEditorTheme, initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import { VirtualTerminal } from "../../tui/test/virtual-terminal.ts";
 import type { AgentSession } from "../src/core/agent-session.ts";
 import { redactJsonValue, redactUrl } from "../src/core/bug-report.ts";
-import { KeybindingsManager } from "../src/core/keybindings.ts";
-import { reportBug } from "../src/modes/interactive/bug-report.ts";
-import { ExtensionEditorComponent } from "../src/modes/interactive/components/extension-editor.ts";
-import { ExtensionSelectorComponent } from "../src/modes/interactive/components/extension-selector.ts";
-import { getEditorTheme, initTheme } from "../src/modes/interactive/theme/theme.ts";
 
 beforeAll(() => initTheme("dark"));
 

@@ -2,6 +2,18 @@
 
 Minimal terminal UI framework with differential rendering and synchronized output for flicker-free interactive CLI applications.
 
+## Pi CLI
+
+```sh
+npm install -g --ignore-scripts @earendil-works/pi-tui
+pi --help
+```
+
+The root export provides terminal UI primitives. `@earendil-works/pi-tui/host`
+provides the Pi terminal host, including interactive mode, RPC clients and UI
+components for extensions. The host runs on `@earendil-works/pi-coding-agent`,
+which can be installed by itself to run Pi extensions without a terminal.
+
 ## Features
 
 - **Interchangeable Renderers**: Shared `TUI` interface with main-screen and alternate-screen implementations

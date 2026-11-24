@@ -11,8 +11,7 @@ import {
 	modelsAreEqual,
 } from "@earendil-works/pi-ai";
 import { minimatch } from "minimatch";
-import { isValidThinkingLevel } from "../cli/args.ts";
-import { DEFAULT_THINKING_LEVEL } from "./defaults.ts";
+import { DEFAULT_THINKING_LEVEL, isValidThinkingLevel } from "./defaults.ts";
 import type { ModelRuntime } from "./model-runtime.ts";
 
 /** Default chat model IDs for providers with built-in chat models. */

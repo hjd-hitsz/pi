@@ -24,6 +24,7 @@ const WORKSPACE = {
 	"@earendil-works/pi-durable": "packages/durable/src",
 	"@earendil-works/pi-agent-core": "packages/agent/src",
 	"@earendil-works/pi-codemode": "packages/codemode/src",
+	"@earendil-works/pi-coding-agent": "packages/coding-agent/src",
 	"@earendil-works/pi-telemetry": "packages/telemetry/src",
 	"@earendil-works/pi-mcp": "packages/mcp/src",
 	"@earendil-works/pi-schema": "packages/schema/src",
@@ -35,6 +36,9 @@ const WORKSPACE = {
  * graph it is allowed to reach.
  */
 const BUDGETS = {
+	"packages/coding-agent": {
+		".": { forbid: ["packages/tui/src/"] },
+	},
 	"packages/schema": {
 		// The format checks (vendored from TypeBox, about 40 KB) load only through ./formats.
 		".": { maxFiles: 10, forbid: ["schema/src/formats/"] },
@@ -181,7 +185,7 @@ for (const [pkgDir, budgets] of Object.entries(BUDGETS)) {
 				continue;
 			}
 			const graph = [...walk(source)].map((file) => relative(ROOT, file).split(sep).join("/"));
-			if (graph.length > limits.maxFiles) {
+			if (limits.maxFiles !== undefined && graph.length > limits.maxFiles) {
 				console.error(
 					`${pkgDir} export "${name}" reaches ${graph.length} files, budget ${limits.maxFiles}\n` +
 						graph.map((file) => `    ${file}`).join("\n"),

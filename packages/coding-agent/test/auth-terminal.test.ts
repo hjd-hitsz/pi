@@ -1,6 +1,6 @@
 import { PassThrough } from "node:stream";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { createProcessLoginTerminal } from "../src/cli/auth-terminal.ts";
+import { createProcessLoginTerminal } from "../../tui/src/host/cli/auth-terminal.ts";
 
 const inputs: PassThrough[] = [];
 

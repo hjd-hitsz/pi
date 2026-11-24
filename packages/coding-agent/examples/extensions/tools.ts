@@ -10,8 +10,8 @@
  */
 
 import type { ExtensionAPI, ExtensionContext, ToolInfo } from "@earendil-works/pi-coding-agent";
-import { getSettingsListTheme } from "@earendil-works/pi-coding-agent";
 import { Container, type SettingItem, SettingsList } from "@earendil-works/pi-tui";
+import { getSettingsListTheme } from "../../../tui/src/host/index.ts";
 
 // State persisted to session
 interface ToolsState {

@@ -13,13 +13,13 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import type { Args } from "../src/cli/args.ts";
+import type { Args } from "../../tui/src/host/cli/args.ts";
+import { createSessionManager } from "../../tui/src/host/main.ts";
 import { ENV_AGENT_DIR } from "../src/config.ts";
 import { SessionManager } from "../src/core/session-manager.ts";
 import { SettingsManager } from "../src/core/settings-manager.ts";
-import { createSessionManager } from "../src/main.ts";
 
-const cliPath = resolve(__dirname, "../src/cli.ts");
+const cliPath = resolve(__dirname, "../../tui/src/host/cli.ts");
 // --import takes a module specifier, not a filesystem path.
 const sourceResolverUrl = pathToFileURL(resolve(__dirname, "../src/experimental/source-resolver.ts")).href;
 const tempDirs: string[] = [];

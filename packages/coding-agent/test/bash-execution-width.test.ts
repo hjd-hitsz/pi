@@ -4,8 +4,8 @@
  */
 import { visibleWidth } from "@earendil-works/pi-tui";
 import { beforeAll, describe, expect, it } from "vitest";
-import { BashExecutionComponent } from "../src/modes/interactive/components/bash-execution.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
+import { BashExecutionComponent } from "../../tui/src/host/modes/interactive/components/bash-execution.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 
 /** Minimal TUI stub that only exposes terminal.columns */
 function createTuiStub(columns: number): { columns: number; stub: any } {

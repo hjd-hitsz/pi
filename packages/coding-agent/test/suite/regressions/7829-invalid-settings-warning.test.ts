@@ -1,8 +1,8 @@
 import { Container } from "@earendil-works/pi-tui";
 import { beforeAll, describe, expect, it, vi } from "vitest";
+import { InteractiveMode } from "../../../../tui/src/host/modes/interactive/interactive-mode.ts";
+import { initTheme } from "../../../../tui/src/host/modes/interactive/theme/theme.ts";
 import type { AgentSessionRuntimeDiagnostic } from "../../../src/core/agent-session-services.ts";
-import { InteractiveMode } from "../../../src/modes/interactive/interactive-mode.ts";
-import { initTheme } from "../../../src/modes/interactive/theme/theme.ts";
 import { createHarness } from "../harness.ts";
 
 function render(container: Container): string {

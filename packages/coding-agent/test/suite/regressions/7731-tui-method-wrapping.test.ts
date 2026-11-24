@@ -1,6 +1,6 @@
 import type { TUI } from "@earendil-works/pi-tui";
 import { describe, expect, it, vi } from "vitest";
-import { createInteractiveTuiReference } from "../../../src/modes/interactive/interactive-mode.ts";
+import { createInteractiveTuiReference } from "../../../../tui/src/host/modes/interactive/interactive-mode.ts";
 
 describe("TUI method wrapping", () => {
 	it("calls the method captured before a replacement", () => {

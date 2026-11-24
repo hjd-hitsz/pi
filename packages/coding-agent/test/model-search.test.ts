@@ -1,6 +1,6 @@
 import { fuzzyFilter } from "@earendil-works/pi-tui";
 import { describe, expect, it } from "vitest";
-import { getDistinctModelName, getModelSelectorSearchText } from "../src/modes/interactive/model-search.ts";
+import { getDistinctModelName, getModelSelectorSearchText } from "../../tui/src/host/modes/interactive/model-search.ts";
 
 // #5916
 describe("getDistinctModelName", () => {

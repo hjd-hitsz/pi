@@ -9,8 +9,8 @@ import { ProcessTerminal, type TUI, TuiMainScreen } from "@earendil-works/pi-tui
 import { readFileSync } from "fs";
 import { dirname, join } from "path";
 import { fileURLToPath } from "url";
-import { AssistantMessageComponent } from "../src/modes/interactive/components/assistant-message.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
+import { AssistantMessageComponent } from "../../tui/src/host/modes/interactive/components/assistant-message.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

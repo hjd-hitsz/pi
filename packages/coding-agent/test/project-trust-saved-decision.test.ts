@@ -4,13 +4,13 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { afterEach, describe, expect, it } from "vitest";
-import { createProjectTrustContext } from "../src/cli/project-trust.ts";
+import { createProjectTrustContext } from "../../tui/src/host/cli/project-trust.ts";
 import { ENV_AGENT_DIR } from "../src/config.ts";
 import { resolveProjectTrusted } from "../src/core/project-trust.ts";
 import { SettingsManager } from "../src/core/settings-manager.ts";
 import { ProjectTrustStore } from "../src/core/trust-manager.ts";
 
-const cliPath = resolve(__dirname, "../src/cli.ts");
+const cliPath = resolve(__dirname, "../../tui/src/host/cli.ts");
 // --import takes a module specifier, not a filesystem path.
 const sourceResolverUrl = pathToFileURL(resolve(__dirname, "../src/experimental/source-resolver.ts")).href;
 const tempDirs: string[] = [];

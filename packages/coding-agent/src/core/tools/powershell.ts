@@ -60,7 +60,6 @@ const powershellToolConfig: ShellToolConfig = {
 	name: "powershell",
 	label: "powershell",
 	shellName: "PowerShell",
-	prompt: "PS>",
 	promptSnippet: powershellToolSystemPromptContribution.snippet,
 	promptGuidelines: powershellToolSystemPromptContribution.guidelines,
 	tempFilePrefix: "pi-powershell",

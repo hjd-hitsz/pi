@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { registerFauxProvider } from "@earendil-works/pi-ai/compat";
 import { afterEach, describe, expect, test, vi } from "vitest";
+import { runPrintMode } from "../../../tui/src/host/modes/print-mode.ts";
 import {
 	type CreateAgentSessionRuntimeFactory,
 	createAgentSessionFromServices,
@@ -13,7 +14,6 @@ import { AuthStorage } from "../../src/core/auth-storage.ts";
 import { ModelRuntime } from "../../src/core/model-runtime.ts";
 import { SessionManager } from "../../src/core/session-manager.ts";
 import type { ExtensionAPI } from "../../src/index.ts";
-import { runPrintMode } from "../../src/modes/print-mode.ts";
 
 const stdout = vi.hoisted(() => ({ lines: [] as string[] }));
 

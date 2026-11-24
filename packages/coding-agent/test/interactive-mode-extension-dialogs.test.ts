@@ -1,7 +1,7 @@
 import { type Component, Container, Text } from "@earendil-works/pi-tui";
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import { InteractiveMode } from "../src/modes/interactive/interactive-mode.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
+import { InteractiveMode } from "../../tui/src/host/modes/interactive/interactive-mode.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 
 type DialogContext = {
 	extensionDialogs: Component[];

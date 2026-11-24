@@ -2,7 +2,12 @@ import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, test, vi } from "vitest";
-import { type ChangelogEntry, getNewEntries, normalizeChangelogLinks, parseChangelog } from "../src/utils/changelog.ts";
+import {
+	type ChangelogEntry,
+	getNewEntries,
+	normalizeChangelogLinks,
+	parseChangelog,
+} from "../../tui/src/host/utils/changelog.ts";
 
 const entry: ChangelogEntry = {
 	major: 0,

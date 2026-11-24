@@ -28,15 +28,17 @@
 
 import { join, resolve } from "node:path";
 import { createMcpToolName, mcpNamespace, mcpServerSummary } from "@earendil-works/pi-mcp";
-import type { SelectItem } from "@earendil-works/pi-tui";
 import type { TSchema } from "typebox";
 import { getAgentDir } from "../../config.ts";
+import type { AutocompleteItem } from "../../core/extension-host-types.ts";
 import type {
 	ExtensionAPI,
 	ExtensionCommandContext,
 	ExtensionContext,
 	ExtensionFactory,
 	ToolDefinition,
+	ToolRendererResolver,
+	ToolRenderers,
 } from "../../core/extensions/types.ts";
 import type { ModelRegistry } from "../../core/model-registry.ts";
 import { sliceHead } from "../../core/tools/truncate.ts";
@@ -62,12 +64,31 @@ import {
 import { loadMcpRuntime } from "./runtime.lazy.ts";
 import type * as McpRuntime from "./runtime.ts";
 import type { McpServerConnection, McpServerLog, McpTransportFactory } from "./runtime.ts";
-import { createMcpToolDefinition, createMcpToolRenderers, type McpToolDetails } from "./tools.ts";
-import { type McpMenu, type McpUi, showMcpManager } from "./ui.ts";
+import { createMcpToolDefinition, type McpToolDetails } from "./tools.ts";
 
 export type { McpTransportFactory } from "./runtime.ts";
 
+export interface McpMenu {
+	title: string;
+	details?: string;
+	error?: string;
+	items: AutocompleteItem[];
+	empty?: string;
+	selected?: string;
+	confirmLabel: string;
+	cancelLabel: string;
+}
+
+export interface McpUi {
+	menu(build: () => McpMenu, subscribe?: (listener: () => void) => () => void): Promise<string | undefined>;
+	status(title: string, message: string, onCancel?: () => void): void;
+	redirectUrl(title: string, authorizationUrl: string, signal: AbortSignal): Promise<string | undefined>;
+}
+
 export interface McpExtensionOptions {
+	showManager?: (context: ExtensionCommandContext, run: (ui: McpUi) => Promise<void>) => Promise<void>;
+	renderTool?: ToolRendererResolver;
+	createToolRenderers?: (label: string) => ToolRenderers;
 	/** Defaults to reading `mcp.json` from the agent directory and the trusted project. */
 	loadConfig?: (ctx: ExtensionContext) => LoadedMcpConfig;
 	/** Defaults to stdio and streamable HTTP transports built from the server config. */
@@ -376,11 +397,7 @@ export function createMcpExtension(options: McpExtensionOptions = {}): Extension
 		/** Last definition registered under each tool name, to re-register withdrawn tools as hidden. */
 		const definitions = new Map<string, ToolDefinition<TSchema, McpToolDetails>>();
 
-		// A resumed session renders calls to MCP tools before their server connected, if it ever does.
-		pi.registerToolRenderer((toolName, next) => {
-			const match = /^mcp__(.+?)__(.+)$/.exec(toolName);
-			return next() ?? (match ? createMcpToolRenderers(`${match[1]}/${match[2]}`) : undefined);
-		});
+		if (options.renderTool) pi.registerToolRenderer(options.renderTool);
 
 		const registerTools = (connection: McpServerConnection) => {
 			const server = connection.entry.name;
@@ -439,7 +456,7 @@ export function createMcpExtension(options: McpExtensionOptions = {}): Extension
 					readableResources: () => resourceServers().some((current) => current.name === server),
 				});
 				definitions.set(definition.name, definition);
-				pi.registerTool(definition);
+				pi.registerTool({ ...definition, ...options.createToolRenderers?.(definition.label) });
 			}
 			serverTools.set(server, current);
 			// Tools cannot be unregistered, so tools the server dropped are re-registered as hidden. When
@@ -828,7 +845,7 @@ export function createMcpExtension(options: McpExtensionOptions = {}): Extension
 			// Global servers without an override can be turned on or off for the trusted project alone.
 			const inProject = entry.scope === "global" && !entry.override && projectConfig !== undefined;
 			const inProjectSaved = "saved to the project mcp.json";
-			const items: SelectItem[] = [];
+			const items: AutocompleteItem[] = [];
 			if (!isEnabled(server)) {
 				items.push({ value: "enable", label: "Enable", description: saved });
 				if (inProject) {
@@ -1081,8 +1098,8 @@ export function createMcpExtension(options: McpExtensionOptions = {}): Extension
 			}
 			const { signal } = session;
 			let failure: string | undefined;
-			if (ctx.mode === "tui") {
-				await showMcpManager(ctx, async (ui) => {
+			if (ctx.mode === "tui" && options.showManager) {
+				await options.showManager(ctx, async (ui) => {
 					failure = await signInWithUi(ui, server);
 				});
 			} else {
@@ -1281,7 +1298,7 @@ export function createMcpExtension(options: McpExtensionOptions = {}): Extension
 			handler: async (args, ctx) => {
 				const [action, name, ...extra] = args.trim().split(/\s+/).filter(Boolean);
 				if (action === undefined) {
-					if (ctx.mode === "tui") await showMcpManager(ctx, (ui) => manage(ui, ctx));
+					if (ctx.mode === "tui" && options.showManager) await options.showManager(ctx, (ui) => manage(ui, ctx));
 					else {
 						await pending;
 						ctx.ui.notify(formatStatus(), "info");

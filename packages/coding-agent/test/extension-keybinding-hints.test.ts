@@ -3,14 +3,14 @@
 import { setKeybindings, Text, type TUI } from "@earendil-works/pi-tui";
 import { Type } from "typebox";
 import { beforeAll, describe, expect, test } from "vitest";
+import { KeybindingsManager } from "../../tui/src/host/core/keybindings.ts";
+import { CustomEntryComponent } from "../../tui/src/host/modes/interactive/components/custom-entry.ts";
+import { CustomMessageComponent } from "../../tui/src/host/modes/interactive/components/custom-message.ts";
+import { ToolExecutionComponent } from "../../tui/src/host/modes/interactive/components/tool-execution.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import type { KeybindingHints, ToolDefinition } from "../src/core/extensions/types.ts";
-import { KeybindingsManager } from "../src/core/keybindings.ts";
 import type { CustomMessage } from "../src/core/messages.ts";
 import type { CustomEntry } from "../src/core/session-manager.ts";
-import { CustomEntryComponent } from "../src/modes/interactive/components/custom-entry.ts";
-import { CustomMessageComponent } from "../src/modes/interactive/components/custom-message.ts";
-import { ToolExecutionComponent } from "../src/modes/interactive/components/tool-execution.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
 import { stripAnsi } from "../src/utils/ansi.ts";
 
 function hintText(hints: KeybindingHints): string {

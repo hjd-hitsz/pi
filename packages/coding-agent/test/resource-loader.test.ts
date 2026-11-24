@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { pathToFileURL } from "node:url";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { createThemeReader } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import { AuthStorage } from "../src/core/auth-storage.ts";
 import { ExtensionRunner } from "../src/core/extensions/runner.ts";
 import { DefaultResourceLoader, loadProjectContextFiles } from "../src/core/resource-loader.ts";
@@ -298,7 +299,7 @@ Project skill`,
 			);
 
 			const baseTheme = JSON.parse(
-				readFileSync(join(process.cwd(), "src", "modes", "interactive", "theme", "dark.json"), "utf-8"),
+				readFileSync(join(process.cwd(), "../tui/src/host/modes", "interactive", "theme", "dark.json"), "utf-8"),
 			) as { name: string; vars?: Record<string, string> };
 			baseTheme.name = "collision-theme";
 			const userThemePath = join(agentDir, "themes", "collision.json");
@@ -311,7 +312,7 @@ Project skill`,
 			}
 			writeFileSync(projectThemePath, JSON.stringify(baseTheme, null, 2));
 
-			const loader = new DefaultResourceLoader({ cwd, agentDir });
+			const loader = new DefaultResourceLoader({ cwd, agentDir, createThemeReader });
 			await loader.reload();
 
 			const prompt = loader.getPrompts().prompts.find((p) => p.name === "commit");
@@ -606,7 +607,7 @@ Project skill content`,
 			);
 			writeFileSync(join(promptsDir, "project.md"), "Project prompt");
 			const themeData = JSON.parse(
-				readFileSync(join(process.cwd(), "src", "modes", "interactive", "theme", "dark.json"), "utf-8"),
+				readFileSync(join(process.cwd(), "../tui/src/host/modes", "interactive", "theme", "dark.json"), "utf-8"),
 			) as { name: string };
 			themeData.name = "project-theme";
 			writeFileSync(join(themesDir, "project.json"), JSON.stringify(themeData, null, 2));
@@ -851,7 +852,7 @@ description: Package prompt
 Package prompt content`,
 			);
 			const baseTheme = JSON.parse(
-				readFileSync(join(process.cwd(), "src", "modes", "interactive", "theme", "dark.json"), "utf-8"),
+				readFileSync(join(process.cwd(), "../tui/src/host/modes", "interactive", "theme", "dark.json"), "utf-8"),
 			) as { name: string };
 			writeFileSync(
 				join(packageThemesDir, "package-theme.json"),
@@ -889,6 +890,7 @@ Extension prompt content`,
 				cwd,
 				agentDir,
 				settingsManager: SettingsManager.inMemory({ packages: ["npm:metadata-pkg"] }),
+				createThemeReader,
 			});
 			await loader.reload();
 

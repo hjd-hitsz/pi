@@ -3,12 +3,12 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { Container } from "@earendil-works/pi-tui";
 import { afterEach, beforeAll, beforeEach, describe, expect, test } from "vitest";
+import { InteractiveMode } from "../../tui/src/host/modes/interactive/interactive-mode.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import { ExtensionRunner } from "../src/core/extensions/runner.ts";
 import type { Extension, MarkdownMessageType, MarkdownTransformer } from "../src/core/extensions/types.ts";
 import { InMemorySettingsStorage, SettingsManager } from "../src/core/settings-manager.ts";
 import { getSourcePackageKey, type SourceInfo } from "../src/core/source-info.ts";
-import { InteractiveMode } from "../src/modes/interactive/interactive-mode.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
 import { stripAnsi } from "../src/utils/ansi.ts";
 
 type ExtensionChangelogUpdate = { name: string; version: string; markdown: string };

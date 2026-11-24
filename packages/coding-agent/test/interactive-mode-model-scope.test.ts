@@ -1,7 +1,7 @@
 import { Container } from "@earendil-works/pi-tui";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { InteractiveMode } from "../src/modes/interactive/interactive-mode.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
+import { InteractiveMode } from "../../tui/src/host/modes/interactive/interactive-mode.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 
 type ModelScopeContext = {
 	session: { scopedModels: Array<{ model: { id: string }; thinkingLevel?: string }> };

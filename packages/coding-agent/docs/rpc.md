@@ -131,7 +131,7 @@ process.stdin.close()
 process.wait()
 ```
 
-For maintained TypeScript clients, use the checked [RPC client example](../examples/rpc-client.ts). It requires a built Pi CLI because the repository example points to `dist/cli.js`.
+For maintained TypeScript clients, use the checked [RPC client example](../../tui/examples/rpc-client.ts). It starts the CLI shipped with `@earendil-works/pi-tui`.
 
 ## Reference
 

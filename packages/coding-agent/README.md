@@ -10,63 +10,39 @@
 
 > New issues and PRs from new contributors are closed automatically. Maintainers review closed submissions daily. See [CONTRIBUTING.md](https://github.com/earendil-works/pi/blob/main/CONTRIBUTING.md).
 
-# Pi
+# Pi Coding Agent SDK
 
-Pi is a minimal, extensible agent harness that you can make your own.
-
-Adapt Pi to your workflows, not the other way around. Customize Pi with [extensions](docs/extensions.md), [skills](docs/skills.md), [prompt templates](docs/prompt-templates.md), and [themes](docs/themes.md). Bundle them as [Pi packages](docs/packages.md) and share via npm or git.
-
-Pi ships with powerful defaults but skips features like sub-agents and plan mode. Ask Pi to build what you want, or install a package that does it your way.
-
-Use Pi [interactively](docs/usage.md), automate it in [print or JSON mode](docs/cli.md), control it over [RPC](docs/rpc.md), or build apps with the [Pi TypeScript SDK](docs/sdk.md). See [OpenClaw](https://github.com/OpenClaw/OpenClaw) for a real-world integration.
+Embed Pi in a Node.js application without a terminal UI. The SDK manages agent sessions, built-in tools, model configuration, and Pi extensions. It also discovers [skills](docs/skills.md), [prompt templates](docs/prompt-templates.md), and [Pi packages](docs/packages.md).
 
 ## Getting started
 
-Install the command-line interface:
+Install the SDK with Node.js 22.19 or newer:
 
 ```bash
-curl -fsSL https://pi.dev/install.sh | sh
+npm install --ignore-scripts @earendil-works/pi-coding-agent
 ```
 
-On Windows:
+Configure a [model provider](docs/providers.md) before prompting:
 
-```shell
-powershell -c "irm https://pi.dev/install.ps1 | iex"
+```ts
+import { createAgentSession } from "@earendil-works/pi-coding-agent";
+
+const { session } = await createAgentSession();
+
+try {
+  await session.bindExtensions({});
+  await session.prompt("What files are in the current directory?");
+  console.log(session.state.messages);
+} finally {
+  session.dispose();
+}
 ```
 
-The installer pins all dependencies and updates Pi with `pi update`. Alternatively, install directly with npm, which does not pin transitive dependencies:
+Use `DefaultResourceLoader` with `additionalExtensionPaths` to load extensions from explicit files. Extensions that register tools or listen to session events can run without a UI. Extensions that need terminal widgets or themes run in the TUI host. See the [SDK guide](docs/sdk.md), [SDK examples](examples/sdk), and [extension guide](docs/extensions.md).
 
-```bash
-npm install -g --ignore-scripts @earendil-works/pi-coding-agent
-```
+## Terminal host
 
-Pi requires Node.js 22.19 or newer. The macOS, Linux, and Windows installers can install it if needed. Pi does not require dependency lifecycle scripts for a normal npm installation.
-
-On macOS and Linux, Nix users can install the latest release with `nix profile add github:earendil-works/pi/stable`. See the [quickstart](docs/quickstart.md#1-install-pi) for updating and pinning releases.
-
-Start Pi in the directory where you want it to work:
-
-```bash
-cd /path/to/project
-pi
-```
-
-For a built-in AI provider, run `/login` inside Pi to connect a subscription or API key. Then give Pi a task.
-
-See the [documentation](docs/index.md) for full setup and usage instructions.
-
-## Share your OSS coding agent sessions
-
-If you use Pi for open source work, please share your coding agent sessions.
-
-Public OSS session data helps improve models, prompts, tools, and evaluations using real development workflows.
-
-For the full explanation, see [this post on X](https://x.com/badlogicgames/status/2037811643774652911).
-
-To publish sessions, use [`badlogic/pi-share-hf`](https://github.com/badlogic/pi-share-hf) using a Hugging Face account and the Hugging Face CLI.
-
-- [Demo video](https://x.com/badlogicgames/status/2041151967695634619) on how to publish Pi sessions
-- Published Pi development sessions: [`badlogicgames/pi-mono` on Hugging Face](https://huggingface.co/datasets/badlogicgames/pi-mono).
+For the `pi` CLI, including interactive, print, JSON, and RPC modes, install `@earendil-works/pi-tui` instead. It installs and drives the SDK. See the [Pi repository](https://github.com/earendil-works/pi) for CLI setup and session sharing.
 
 ## Development
 

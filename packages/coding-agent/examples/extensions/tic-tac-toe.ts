@@ -18,9 +18,10 @@
  */
 
 import { StringEnum } from "@earendil-works/pi-ai";
-import type { ExtensionAPI, ExtensionContext, Theme, ToolExecutionMode } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, ExtensionContext, ToolExecutionMode } from "@earendil-works/pi-coding-agent";
 import { type Component, matchesKey, Text, truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
 import { Type } from "typebox";
+import type { Theme } from "../../../tui/src/host/index.ts";
 
 // Thrown from the tool on illegal actions. The agent runtime surfaces thrown
 // errors as tool errors (isError=true) without resetting any of our state.
