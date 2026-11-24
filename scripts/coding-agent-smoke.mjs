@@ -62,8 +62,9 @@ export default function (pi) {
 
 export function smokeTestSdkExtension(directory) {
 	withSmokeEnvironment(directory, process.execPath, (run) => {
-		const entry = join(directory, "sdk-plugin-smoke.mjs");
+		const entry = join(directory, "sdk-host-smoke.mts");
 		const extension = join(directory, "sdk-plugin.mts");
+		const transcript = join(directory, "sdk-host-session.jsonl");
 		try {
 			writeFileSync(extension, `import { defineTool, type ExtensionAPI } from "${codingAgentName}";
 import { Type } from "typebox";
@@ -75,21 +76,20 @@ export default function (pi: ExtensionAPI) {
 	}));
 }
 `);
-			const compilerPackageDir = dirname(fileURLToPath(import.meta.resolve("typescript/package.json")));
-			run([
-				join(compilerPackageDir, "bin", "tsc"),
-				"--noEmit", "--pretty", "false", "--strict", "--skipLibCheck",
-				"--target", "ES2022", "--module", "NodeNext", extension,
-			]);
 			writeFileSync(entry, `import assert from "node:assert/strict";
 import { fauxAssistantMessage, fauxToolCall, registerFauxProvider } from "@earendil-works/pi-ai/compat";
-import { createAgentSession, DefaultResourceLoader, ModelRuntime, SessionManager, SettingsManager } from "${codingAgentName}";
+import {
+	createAgentSession, DefaultResourceLoader, ModelRuntime, SessionManager, SettingsManager,
+	type AgentSessionEvent, type DefaultResourceLoaderOptions, type ExtensionBindings,
+} from "${codingAgentName}";
 const cwd = process.cwd();
 const agentDir = process.env.PI_CODING_AGENT_DIR;
+assert.ok(agentDir);
 const settingsManager = SettingsManager.inMemory();
-const resourceLoader = new DefaultResourceLoader({
+const resources: DefaultResourceLoaderOptions = {
 	cwd, agentDir, settingsManager, noExtensions: true, additionalExtensionPaths: [${JSON.stringify(extension)}],
-});
+};
+const resourceLoader = new DefaultResourceLoader(resources);
 await resourceLoader.reload();
 const faux = registerFauxProvider({});
 const model = faux.getModel();
@@ -105,22 +105,46 @@ const sessionManager = SessionManager.inMemory(cwd);
 const { session, extensionsResult } = await createAgentSession({
 	cwd, agentDir, model, modelRuntime, settingsManager, resourceLoader, sessionManager, noTools: "builtin",
 });
+const observed = new Set<AgentSessionEvent["type"]>();
+const unsubscribe = session.subscribe((event) => observed.add(event.type));
 try {
 	assert.deepEqual(extensionsResult.errors, []);
-	await session.bindExtensions({});
+	const bindings: ExtensionBindings = {};
+	await session.bindExtensions(bindings);
 	assert.ok(sessionManager.getBranch().some((entry) => entry.type === "custom" && entry.customType === "smoke-started"));
+	assert.ok(session.getActiveToolNames().includes("smoke_echo"));
 	await session.prompt("Run the echo tool");
 	const result = session.messages.find((message) => message.role === "toolResult" && message.toolName === "smoke_echo");
-	assert.equal(result?.content[0]?.text, "extension-result");
-} finally { session.dispose(); }
+	assert.ok(result?.role === "toolResult");
+	const part = result.content[0];
+	assert.equal(part?.type === "text" && part.text, "extension-result");
+	assert.ok(observed.has("tool_execution_end"));
+	assert.ok(observed.has("agent_settled"));
+	assert.equal(session.getLastAssistantText(), "done");
+	const exported = session.exportToJsonl(${JSON.stringify(transcript)});
+	const restored = SessionManager.open(exported);
+	assert.ok(restored.getBranch().some((entry) => entry.type === "message" && entry.message.role === "toolResult"));
+} finally {
+	unsubscribe();
+	session.dispose();
+}
 `);
+			const compilerPackageDir = dirname(fileURLToPath(import.meta.resolve("typescript/package.json")));
+			const typeRoots = dirname(dirname(fileURLToPath(import.meta.resolve("@types/node/package.json"))));
+			run([
+				join(compilerPackageDir, "bin", "tsc"),
+				"--noEmit", "--pretty", "false", "--strict", "--skipLibCheck",
+				"--target", "ES2022", "--module", "NodeNext", "--typeRoots", typeRoots, "--types", "node",
+				entry, extension,
+			]);
 			run([entry]);
 		} finally {
 			rmSync(extension, { force: true });
 			rmSync(entry, { force: true });
+			rmSync(transcript, { force: true });
 		}
 	});
-	console.log("File extension type-check and tool execution passed with the installed headless SDK.");
+	console.log("Installed headless SDK verified: host and extension types, events, tool execution, and session restore.");
 }
 
 function withSmokeEnvironment(directory, runtime, execute) {

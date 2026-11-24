@@ -16,6 +16,8 @@
 import {
 	createAgentSession,
 	DefaultResourceLoader,
+	type DefaultResourceLoaderOptions,
+	type ExtensionBindings,
 	getAgentDir,
 	SessionManager,
 } from "@earendil-works/pi-coding-agent";
@@ -23,7 +25,7 @@ import {
 // Extensions are discovered automatically from standard locations.
 // You can also add paths via settings.json or DefaultResourceLoader options.
 
-const resourceLoader = new DefaultResourceLoader({
+const resources: DefaultResourceLoaderOptions = {
 	cwd: process.cwd(),
 	agentDir: getAgentDir(),
 	additionalExtensionPaths: ["./my-logging-extension.ts", "./my-safety-extension.ts"],
@@ -34,7 +36,8 @@ const resourceLoader = new DefaultResourceLoader({
 			});
 		},
 	],
-});
+};
+const resourceLoader = new DefaultResourceLoader(resources);
 await resourceLoader.reload();
 
 const { session } = await createAgentSession({
@@ -49,6 +52,8 @@ try {
 		}
 	});
 
+	const bindings: ExtensionBindings = {};
+	await session.bindExtensions(bindings);
 	await session.prompt("List files in the current directory.");
 	console.log();
 } finally {

@@ -1,4 +1,4 @@
-// Core session management
+// Host entry points for embedding the coding agent.
 
 // Config paths
 export {
@@ -15,6 +15,7 @@ export {
 	type AgentSessionConfig,
 	type AgentSessionEvent,
 	type AgentSessionEventListener,
+	type ExtensionBindings,
 	type ModelCycleResult,
 	type ParsedSkillBlock,
 	type PromptOptions,
@@ -247,9 +248,13 @@ export type {
 	ResolvedResource,
 } from "./core/package-manager.ts";
 export { DefaultPackageManager } from "./core/package-manager.ts";
-export type { ResourceCollision, ResourceDiagnostic, ResourceLoader } from "./core/resource-loader.ts";
+export type {
+	DefaultResourceLoaderOptions,
+	ResourceCollision,
+	ResourceDiagnostic,
+	ResourceLoader,
+} from "./core/resource-loader.ts";
 export { DefaultResourceLoader, loadProjectContextFiles } from "./core/resource-loader.ts";
-// SDK for programmatic usage
 export {
 	AgentSessionRuntime,
 	type AgentSessionRuntimeDiagnostic,
@@ -260,13 +265,11 @@ export {
 	type CreateAgentSessionRuntimeFactory,
 	type CreateAgentSessionRuntimeResult,
 	type CreateAgentSessionServicesOptions,
-	// Factory
 	createAgentSession,
 	createAgentSessionFromServices,
 	createAgentSessionRuntime,
 	createAgentSessionServices,
 	createBashTool,
-	// Tool factories (for custom cwd)
 	createCodingTools,
 	createEditTool,
 	createFindTool,

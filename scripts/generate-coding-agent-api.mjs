@@ -1,0 +1,136 @@
+#!/usr/bin/env node
+
+import { readFileSync, writeFileSync } from "node:fs";
+import { join, relative, resolve, sep } from "node:path";
+import { fileURLToPath } from "node:url";
+import { SyntaxKind } from "typescript/unstable/ast";
+import { isExportDeclaration, isNamedExports, isPrivateIdentifier, isStringLiteral } from "typescript/unstable/ast/is";
+import { API } from "typescript/unstable/sync";
+
+const packageDir = fileURLToPath(new URL("../packages/coding-agent/", import.meta.url));
+const sourceDir = join(packageDir, "src");
+const entry = join(sourceDir, "index.ts");
+const configPath = join(packageDir, "tsconfig.sdk-api.json");
+const config = JSON.stringify({ compilerOptions: { module: "NodeNext", noLib: true, types: [] }, files: [entry] });
+const referencePath = join(packageDir, "docs", "sdk-api.md");
+
+function publicMembers(declarations, project) {
+	const groups = { constructors: new Set(), static: new Set(), instance: new Set() };
+	for (const declaration of declarations) {
+		if (declaration.kind !== SyntaxKind.ClassDeclaration && declaration.kind !== SyntaxKind.InterfaceDeclaration) {
+			continue;
+		}
+		const node = declaration.resolve(project);
+		const source = project.program.getSourceFile(declaration.path);
+		for (const member of node.members) {
+			const modifierKinds = member.modifiers?.map((modifier) => modifier.kind) ?? [];
+			if (modifierKinds.includes(SyntaxKind.PrivateKeyword) || modifierKinds.includes(SyntaxKind.ProtectedKeyword)) {
+				continue;
+			}
+			if (member.kind === SyntaxKind.Constructor) {
+				groups.constructors.add("`constructor()`");
+				continue;
+			}
+			if (member.name && isPrivateIdentifier(member.name)) continue;
+			const name = member.name?.getText(source) ?? member.getText(source).replace(/\s+/g, " ");
+			const optional = member.questionToken ? "?" : "";
+			const callable = member.kind === SyntaxKind.MethodDeclaration || member.kind === SyntaxKind.MethodSignature;
+			const group = modifierKinds.includes(SyntaxKind.StaticKeyword) ? groups.static : groups.instance;
+			group.add(`\`${name}${optional}${callable ? "()" : ""}\``);
+		}
+	}
+	return [
+		["Construction", groups.constructors],
+		["Static members", groups.static],
+		["Members", groups.instance],
+	].filter(([, members]) => members.size > 0);
+}
+
+function renderReference() {
+	const api = new API({
+		cwd: packageDir,
+		fs: {
+			fileExists: (file) => (resolve(file) === configPath ? true : undefined),
+			readFile: (file) => (resolve(file) === configPath ? config : undefined),
+		},
+	});
+	try {
+		const project = api.updateSnapshot({ openProjects: [configPath] }).getProject(configPath);
+		const source = project.program.getSourceFile(entry);
+		const imports = new Map();
+		for (const statement of source.statements) {
+			if (!isExportDeclaration(statement) || !statement.exportClause || !isNamedExports(statement.exportClause)) {
+				throw new Error("List every SDK root export explicitly in packages/coding-agent/src/index.ts.");
+			}
+			const module = statement.moduleSpecifier;
+			if (!module || !isStringLiteral(module) || !module.text.startsWith("./") || !module.text.endsWith(".ts")) {
+				throw new Error("Export SDK symbols by name from their TypeScript modules.");
+			}
+			for (const symbol of statement.exportClause.elements) {
+				const name = symbol.name.text;
+				if (imports.has(name)) throw new Error(`Duplicate SDK export: ${name}`);
+				imports.set(name, {
+					isTypeOnly: statement.isTypeOnly || symbol.isTypeOnly,
+					declarationPath: `dist/${module.text.slice(2, -3)}.d.ts`,
+				});
+			}
+		}
+		const { checker } = project;
+		const moduleSymbol = checker.getSymbolAtLocation(source);
+		const symbols = checker.getExportsOfModule(moduleSymbol).sort((left, right) => left.name.localeCompare(right.name, "en"));
+		const rows = [];
+		const sections = [];
+		for (const symbol of symbols) {
+			const { name } = symbol;
+			const exportInfo = imports.get(name);
+			const target = checker.getAliasedSymbol(symbol);
+			if (!exportInfo || checker.isUnknownSymbol(target)) throw new Error(`Cannot resolve SDK export: ${name}`);
+			for (const declaration of target.declarations) {
+				const localPath = relative(sourceDir, declaration.path).split(sep).join("/");
+				if (!localPath.startsWith("../") && localPath.endsWith(".ts")) {
+					exportInfo.declarationPath = `dist/${localPath.slice(0, -3)}.d.ts`;
+					break;
+				}
+			}
+			const members = publicMembers(target.declarations, project);
+			const label = members.length ? `[\`${name}\`](#${name.toLowerCase()})` : `\`${name}\``;
+			rows.push(`| ${label} | ${exportInfo.isTypeOnly ? "Type" : "Value"} | \`${exportInfo.declarationPath}\` |`);
+			if (members.length) {
+				sections.push(`### ${name}`, "", ...members.map(([group, names]) => `- ${group}: ${[...names].join(", ")}`), "");
+			}
+		}
+		if (rows.length !== imports.size) throw new Error("SDK export index is incomplete.");
+		return [
+			"# Coding Agent SDK API",
+			"",
+			"<!-- Generated by node scripts/generate-coding-agent-api.mjs from the repository root. -->",
+			"",
+			"Use the [SDK guide](sdk.md) for integration and the [examples](../examples/sdk/README.md) for runnable workflows.",
+			"",
+			`This index lists all ${rows.length} named exports of \`@earendil-works/pi-coding-agent\`. Import from that package root, not from the declaration files below. \`host-support/*\` is reserved for the Pi terminal host.`,
+			"",
+			"For exact signatures, options, return types, and inherited members, use **Go to Definition** on the import in your editor or open the listed declaration file in the installed package. Value exports may also have a type (for example, a class). Type exports are erased at runtime.",
+			"",
+			"| Export | Import kind | Declaration in the package |",
+			"|---|---|---|",
+			...rows,
+			"",
+			"## Class and Interface Members",
+			"",
+			"These are the public members declared directly on each exported class or interface. For inherited members and exact signatures, see the TypeScript declarations.",
+			"",
+			...sections,
+		].join("\n");
+	} finally {
+		api.close();
+	}
+}
+
+const reference = renderReference();
+if (process.argv.includes("--check")) {
+	if (readFileSync(referencePath, "utf8").replaceAll("\r\n", "\n") !== reference) {
+		throw new Error("SDK API index is out of date. Run npm run generate:sdk-api.");
+	}
+} else {
+	writeFileSync(referencePath, reference);
+}

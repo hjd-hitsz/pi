@@ -31,6 +31,7 @@
 		"docs/packages.md",
 		"docs/prompt-templates.md",
 		"docs/providers.md",
+		"docs/sdk-api.md",
 		"docs/sdk.md",
 		"docs/security.md",
 		"docs/session-format.md",

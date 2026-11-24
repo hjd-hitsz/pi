@@ -14,6 +14,14 @@
 
 Embed Pi in a Node.js application without a terminal UI. The SDK manages agent sessions, built-in tools, model configuration, and Pi extensions. It also discovers [skills](docs/skills.md), [prompt templates](docs/prompt-templates.md), and [Pi packages](docs/packages.md).
 
+## Public API
+
+Import from `@earendil-works/pi-coding-agent`. The package root is the application and extension entry point; `host-support/*` is reserved for the terminal host. In an installed package, `dist/index.d.ts` is the entry to the TypeScript declarations. Use editor completion in a named `import` and **Go to Definition** for signatures.
+
+- [Complete API index](docs/sdk-api.md): all named values and types exported from the package root.
+- [Integration guide](docs/sdk.md): how an application configures the SDK, drives sessions, consumes events, and loads plugins.
+- [Checked examples](examples/sdk/README.md): working code for models and credentials, tools, extensions, persistent sessions, full host configuration, and conversation switching.
+
 ## Getting started
 
 Install the SDK with Node.js 22.19 or newer:
@@ -32,13 +40,13 @@ const { session } = await createAgentSession();
 try {
   await session.bindExtensions({});
   await session.prompt("What files are in the current directory?");
-  console.log(session.state.messages);
+  console.log(session.getLastAssistantText());
 } finally {
   session.dispose();
 }
 ```
 
-Use `DefaultResourceLoader` with `additionalExtensionPaths` to load extensions from explicit files. Extensions that register tools or listen to session events can run without a UI. Extensions that need terminal widgets or themes run in the TUI host. See the [SDK guide](docs/sdk.md), [SDK examples](examples/sdk), and [extension guide](docs/extensions.md).
+This example uses the current directory, default resources, built-in tools, and persistent sessions. See [host configuration](docs/sdk.md#configure-the-host) to choose these explicitly. Load headless extensions with `DefaultResourceLoader`; extensions that require terminal widgets or themes still need the TUI host.
 
 ## Terminal host
 
