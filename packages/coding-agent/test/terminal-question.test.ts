@@ -1,6 +1,6 @@
 import { PassThrough } from "node:stream";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { questionTerminal } from "../src/utils/terminal-question.ts";
+import { questionTerminal } from "../../tui/src/host/utils/terminal-question.ts";
 
 const streams: PassThrough[] = [];
 

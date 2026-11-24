@@ -18,7 +18,7 @@ Adapt Pi to your workflows, not the other way around. Customize Pi with [extensi
 
 Pi ships with powerful defaults but skips features like sub-agents and plan mode. Ask Pi to build what you want, or install a package that does it your way.
 
-Use Pi [interactively](packages/coding-agent/docs/usage.md), automate it in [print or JSON mode](packages/coding-agent/docs/cli.md), control it over [RPC](packages/coding-agent/docs/rpc.md), or build apps with the [Pi TypeScript SDK](packages/coding-agent/docs/sdk.md). See [OpenClaw](https://github.com/OpenClaw/OpenClaw) for a real-world integration.
+Use Pi [interactively](packages/coding-agent/docs/usage.md), automate it in [print or JSON mode](packages/coding-agent/docs/cli.md), control it over [RPC](packages/coding-agent/docs/rpc.md), or [embed the SDK](#embed-the-sdk) in your application.
 
 ## Getting started
 
@@ -37,7 +37,7 @@ powershell -c "irm https://pi.dev/install.ps1 | iex"
 The installer pins all dependencies and updates Pi with `pi update`. Alternatively, install directly with npm, which does not pin transitive dependencies:
 
 ```bash
-npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+npm install -g --ignore-scripts @earendil-works/pi-tui
 ```
 
 Pi requires Node.js 22.19 or newer. The macOS, Linux, and Windows installers can install it if needed. Pi does not require dependency lifecycle scripts for a normal npm installation.
@@ -52,6 +52,16 @@ pi
 For a built-in AI provider, run `/login` inside Pi to connect a subscription or API key. Then give Pi a task.
 
 See the [documentation](https://pi.dev/docs/latest) for full setup and usage instructions, or [visit pi.dev](https://pi.dev) for demos.
+
+## Embed the SDK
+
+Use `@earendil-works/pi-coding-agent` when your application owns the UI, conversation lifecycle, model configuration, or tools. The SDK is a Node.js library and does not install the CLI or terminal UI.
+
+- [Integration guide](packages/coding-agent/docs/sdk.md): configure models, tools and extensions; drive and observe sessions; persist or replace conversations.
+- [Complete API index](packages/coding-agent/docs/sdk-api.md): every named import, its import kind, and where to find its declarations.
+- [SDK examples](packages/coding-agent/examples/sdk/README.md): runnable integrations, including full host configuration and session replacement.
+
+To consume this checkout before publication, use [local package artifacts](#using-local-packages-outside-the-monorepo) with `--package @earendil-works/pi-coding-agent`.
 
 ## Run with Nix
 
@@ -80,8 +90,8 @@ This monorepo contains the Pi CLI and its supporting libraries.
 | **[@earendil-works/pi-ai](packages/ai)** | Unified multi-provider LLM API (OpenAI, Anthropic, Google, etc.) |
 | **[@earendil-works/pi-durable](packages/durable)** | Durable conversation, task, and document runtime |
 | **[@earendil-works/pi-agent-core](packages/agent)** | Agent runtime with tool calling and state management |
-| **[@earendil-works/pi-coding-agent](packages/coding-agent)** | Interactive coding agent CLI |
-| **[@earendil-works/pi-tui](packages/tui)** | Terminal UI library with differential rendering |
+| **[@earendil-works/pi-coding-agent](packages/coding-agent)** | Headless coding-agent SDK for sessions, tools, model configuration, and extensions |
+| **[@earendil-works/pi-tui](packages/tui)** | Terminal UI library and `pi` CLI host for the SDK |
 
 For Slack/chat automation and workflows see [earendil-works/pi-chat](https://github.com/earendil-works/pi-chat).
 

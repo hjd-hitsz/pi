@@ -14,15 +14,15 @@ import { delimiter, join } from "node:path";
 import { ModelsError } from "@earendil-works/pi-ai";
 import lockfile from "proper-lockfile";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { main } from "../../tui/src/host/main.ts";
+import { ConfigSelectorComponent } from "../../tui/src/host/modes/interactive/components/config-selector.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
+import { handlePackageCommand } from "../../tui/src/host/package-manager-cli.ts";
 import { ENV_AGENT_DIR, PACKAGE_NAME, VERSION } from "../src/config.ts";
 import { ModelRuntime } from "../src/core/model-runtime.ts";
 import { DefaultPackageManager, type ResolvedPaths } from "../src/core/package-manager.ts";
 import { InMemorySettingsStorage, SettingsManager } from "../src/core/settings-manager.ts";
 import { ProjectTrustStore } from "../src/core/trust-manager.ts";
-import { main } from "../src/main.ts";
-import { ConfigSelectorComponent } from "../src/modes/interactive/components/config-selector.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
-import { handlePackageCommand } from "../src/package-manager-cli.ts";
 import { allowNetwork } from "./test-network-env.ts";
 
 describe("package commands", () => {

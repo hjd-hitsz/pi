@@ -1,9 +1,9 @@
 import { resetCapabilitiesCache, setCapabilities } from "@earendil-works/pi-tui";
 import { afterEach, describe, expect, it } from "vitest";
+import { createMermaidMarkdownTransformer } from "../../tui/src/host/modes/interactive/components/mermaid.ts";
+import type { Theme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import type { MarkdownTransformContext } from "../src/core/extensions/types.ts";
 import type { MermaidRenderingMode } from "../src/core/settings-manager.ts";
-import { createMermaidMarkdownTransformer } from "../src/modes/interactive/components/mermaid.ts";
-import type { Theme } from "../src/modes/interactive/theme/theme.ts";
 
 afterEach(() => resetCapabilitiesCache());
 

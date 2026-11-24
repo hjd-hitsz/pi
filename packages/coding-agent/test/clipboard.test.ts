@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import type * as OsModule from "node:os";
 import type { NativeClipboard } from "@earendil-works/pi-tui";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { copyToClipboard, readClipboardText } from "../src/utils/clipboard.ts";
+import { copyToClipboard, readClipboardText } from "../../tui/src/host/utils/clipboard.ts";
 
 const mocks = vi.hoisted(() => ({
 	clipboard: {

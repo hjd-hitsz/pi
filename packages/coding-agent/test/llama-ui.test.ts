@@ -1,10 +1,10 @@
 import { type Component, setKeybindings, type TUI } from "@earendil-works/pi-tui";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
+import { KeybindingsManager } from "../../tui/src/host/core/keybindings.ts";
+import type { HuggingFaceModel } from "../../tui/src/host/extensions/llama/huggingface.ts";
+import { type LlamaUi, showLlamaUi } from "../../tui/src/host/extensions/llama/ui.ts";
+import { initTheme, theme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import type { ExtensionCommandContext } from "../src/core/extensions/types.ts";
-import { KeybindingsManager } from "../src/core/keybindings.ts";
-import type { HuggingFaceModel } from "../src/extensions/llama/huggingface.ts";
-import { type LlamaUi, showLlamaUi } from "../src/extensions/llama/ui.ts";
-import { initTheme, theme } from "../src/modes/interactive/theme/theme.ts";
 import { stripAnsi } from "../src/utils/ansi.ts";
 
 const DOWN = "\x1b[B";

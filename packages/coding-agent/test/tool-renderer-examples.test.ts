@@ -4,13 +4,13 @@ import { join } from "node:path";
 import { getModel } from "@earendil-works/pi-ai/compat";
 import type { TUI } from "@earendil-works/pi-tui";
 import { afterEach, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { ToolExecutionComponent } from "../../tui/src/host/modes/interactive/components/tool-execution.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import type { ToolDefinition } from "../src/core/extensions/types.ts";
 import { DefaultResourceLoader } from "../src/core/resource-loader.ts";
 import { createAgentSession } from "../src/core/sdk.ts";
 import { SessionManager } from "../src/core/session-manager.ts";
 import { SettingsManager } from "../src/core/settings-manager.ts";
-import { ToolExecutionComponent } from "../src/modes/interactive/components/tool-execution.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
 
 const examplesDir = join(import.meta.dirname, "../examples/extensions");
 

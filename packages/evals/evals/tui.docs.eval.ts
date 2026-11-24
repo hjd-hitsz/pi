@@ -1,14 +1,8 @@
 import { setTimeout } from "node:timers/promises";
 import { stripVTControlCharacters } from "node:util";
 import type { AssistantMessage } from "@earendil-works/pi-ai";
-import {
-	type AgentSession,
-	AgentSessionRuntime,
-	type AgentSessionServices,
-	InteractiveMode,
-	SessionManager,
-	createAgentSessionFromServices,
-} from "@earendil-works/pi-coding-agent";
+import { type AgentSession, AgentSessionRuntime, type AgentSessionServices, SessionManager, createAgentSessionFromServices } from "@earendil-works/pi-coding-agent";
+import { InteractiveMode } from "../../tui/src/host/index.ts";
 import { createJudge, describeEval } from "vitest-evals";
 import { createPiDocumentationEvalHarness, type PiCodingAgentInput } from "../src/harness.ts";
 

@@ -3,16 +3,16 @@ import { mkdtempSync, rmSync, writeFileSync } from "fs";
 import { tmpdir } from "os";
 import { join } from "path";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { shouldRunFirstTimeSetup } from "../src/cli/startup-ui.ts";
-import { ENV_AGENT_DIR } from "../src/config.ts";
-import { KeybindingsManager } from "../src/core/keybindings.ts";
-import { SettingsManager } from "../src/core/settings-manager.ts";
+import { shouldRunFirstTimeSetup } from "../../tui/src/host/cli/startup-ui.ts";
+import { KeybindingsManager } from "../../tui/src/host/core/keybindings.ts";
 import {
 	FirstTimeSetupComponent,
 	type FirstTimeSetupResult,
-} from "../src/modes/interactive/components/first-time-setup.ts";
-import { piLogoLines, piWordmark, supportsPiLogo } from "../src/modes/interactive/components/pi-logo.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
+} from "../../tui/src/host/modes/interactive/components/first-time-setup.ts";
+import { piLogoLines, piWordmark, supportsPiLogo } from "../../tui/src/host/modes/interactive/components/pi-logo.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
+import { ENV_AGENT_DIR } from "../src/config.ts";
+import { SettingsManager } from "../src/core/settings-manager.ts";
 
 describe("shouldRunFirstTimeSetup", () => {
 	const originalPiExperimental = process.env.PI_EXPERIMENTAL;

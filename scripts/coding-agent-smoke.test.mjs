@@ -33,7 +33,6 @@ function createFixture(t, { importUndeclared = false } = {}) {
 			types: "./dist/index.d.ts",
 			exports: { ".": { types: "./dist/index.d.ts", import: "./dist/index.js" } },
 			files: ["dist"],
-			bin: { pi: "dist/bundle/cli.js" },
 		},
 		{
 			"dist/index.js": `${importUndeclared ? 'import "@earendil-works/undeclared";' : ""}
@@ -42,8 +41,6 @@ export class SessionManager { static inMemory() {} }
 export class ModelRuntime { static create() {} }
 `,
 			"dist/index.d.ts": "export {};\n",
-			"dist/cli.js": 'console.log("1.0.0");\n',
-			"dist/bundle/cli.js": 'console.log("1.0.0");\n',
 		},
 	);
 	const artifactSet = produceArtifactSet({ build: false, outDir: join(root, "artifacts"), repoRoot, source: null });
@@ -57,7 +54,7 @@ test("accepts a valid coding-agent package", (t) => {
 });
 
 // #9132: smoke-test the public SDK, not just a bundled CLI that hides missing imports.
-test("fails when the SDK imports an undeclared package despite a working CLI", (t) => {
+test("fails when the SDK imports an undeclared package", (t) => {
 	const directory = createFixture(t, { importUndeclared: true });
 	assert.throws(() => smokeTestCodingAgent(directory), /Cannot find package '@earendil-works\/undeclared'/);
 });

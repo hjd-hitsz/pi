@@ -1,10 +1,10 @@
 import type { TUI } from "@earendil-works/pi-tui";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { writeRenderers } from "../src/core/tools/renderers/write.ts";
-import { codemodeRenderers } from "../src/extensions/codemode/renderer.ts";
-import { ToolExecutionComponent } from "../src/modes/interactive/components/tool-execution.ts";
-import { CodeHighlighter, highlightCode, initTheme } from "../src/modes/interactive/theme/theme.ts";
-import * as syntaxHighlight from "../src/utils/syntax-highlight.ts";
+import { writeRenderers } from "../../tui/src/host/core/tools/renderers/write.ts";
+import { codemodeRenderers } from "../../tui/src/host/extensions/codemode/renderer.ts";
+import { ToolExecutionComponent } from "../../tui/src/host/modes/interactive/components/tool-execution.ts";
+import { CodeHighlighter, highlightCode, initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
+import * as syntaxHighlight from "../../tui/src/host/utils/syntax-highlight.ts";
 
 const tui = { requestRender: () => {} } as unknown as TUI;
 

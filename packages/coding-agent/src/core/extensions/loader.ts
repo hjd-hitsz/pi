@@ -9,13 +9,13 @@ import * as path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { Provider } from "@earendil-works/pi-ai";
 import { mcpNamespace } from "@earendil-works/pi-mcp";
-import type { KeyId } from "@earendil-works/pi-tui";
 import type { createJiti } from "jiti";
 import { CONFIG_DIR_NAME, getAgentDir, isBunBinary, isBundledNode } from "../../config.ts";
 import { canonicalizePath, pathsEqual, resolvePath } from "../../utils/paths.ts";
 import { createEventBus, type EventBus } from "../event-bus.ts";
 import type { ExecOptions } from "../exec.ts";
 import { execCommand } from "../exec.ts";
+import type { KeyId } from "../extension-host-types.ts";
 import { type McpServerConfig, McpServerRegistry, validateMcpServerConfig } from "../mcp-servers.ts";
 import { readPiManifest } from "../pi-manifest.ts";
 import { createSyntheticSourceInfo, getSyntheticPathSource, isSyntheticPath } from "../source-info.ts";
@@ -90,7 +90,6 @@ function getAliases(): Record<string, string> {
 
 	const piCodingAgentEntry = packageIndex;
 	const piAgentCoreEntry = resolveWorkspaceOrImport("agent/dist/index.js", "@earendil-works/pi-agent-core");
-	const piTuiEntry = resolveWorkspaceOrImport("tui/dist/index.js", "@earendil-works/pi-tui");
 	// Extensions resolve the pi-ai root to the extension view: the compat
 	// entrypoint (a strict superset of the core entrypoint) plus TypeBox's Type,
 	// Static and TSchema, so extensions using the old global API and pi-ai's
@@ -106,7 +105,6 @@ function getAliases(): Record<string, string> {
 	_aliases = {
 		"@earendil-works/pi-coding-agent": piCodingAgentEntry,
 		"@earendil-works/pi-agent-core": piAgentCoreEntry,
-		"@earendil-works/pi-tui": piTuiEntry,
 		"@earendil-works/pi-ai/providers/all": piAiProvidersEntry,
 		"@earendil-works/pi-ai/compat": piAiCompatEntry,
 		"@earendil-works/pi-ai/models": piAiModelsEntry,
@@ -114,7 +112,6 @@ function getAliases(): Record<string, string> {
 		"@earendil-works/pi-ai": piAiCompatEntry,
 		"@mariozechner/pi-coding-agent": piCodingAgentEntry,
 		"@mariozechner/pi-agent-core": piAgentCoreEntry,
-		"@mariozechner/pi-tui": piTuiEntry,
 		"@mariozechner/pi-ai/providers/all": piAiProvidersEntry,
 		"@mariozechner/pi-ai/compat": piAiCompatEntry,
 		"@mariozechner/pi-ai/models": piAiModelsEntry,
@@ -134,8 +131,14 @@ function getAliases(): Record<string, string> {
 type HandlerFn = (...args: unknown[]) => Promise<unknown>;
 
 let extensionCacheCwd: string | undefined;
+let extensionCacheModuleBindings: ExtensionModuleBindings | undefined;
 let extensionCacheGeneration = 0;
 const extensionCache = new Map<string, ExtensionFactory>();
+
+export interface ExtensionModuleBindings {
+	virtualModules: Record<string, unknown>;
+	getAliases: () => Record<string, string>;
+}
 
 interface ExtensionCacheToken {
 	cwd: string;
@@ -145,15 +148,20 @@ interface ExtensionCacheToken {
 export function clearExtensionCache(): void {
 	extensionCache.clear();
 	extensionCacheCwd = undefined;
+	extensionCacheModuleBindings = undefined;
 	extensionCacheGeneration++;
 }
 
-function useExtensionCacheCwd(cwd: string): ExtensionCacheToken {
+function useExtensionCacheCwd(cwd: string, moduleBindings?: ExtensionModuleBindings): ExtensionCacheToken {
 	const resolvedCwd = resolvePath(cwd);
-	if (extensionCacheCwd !== undefined && !pathsEqual(extensionCacheCwd, resolvedCwd)) {
+	if (
+		extensionCacheCwd !== undefined &&
+		(!pathsEqual(extensionCacheCwd, resolvedCwd) || extensionCacheModuleBindings !== moduleBindings)
+	) {
 		clearExtensionCache();
 	}
 	extensionCacheCwd = resolvedCwd;
+	extensionCacheModuleBindings = moduleBindings;
 	return { cwd: resolvedCwd, generation: extensionCacheGeneration };
 }
 
@@ -584,7 +592,11 @@ function isCurrentCacheToken(cacheToken: ExtensionCacheToken | undefined): cache
 	);
 }
 
-async function loadExtensionModule(extensionPath: string, cacheToken?: ExtensionCacheToken) {
+async function loadExtensionModule(
+	extensionPath: string,
+	cacheToken: ExtensionCacheToken | undefined,
+	moduleBindings: ExtensionModuleBindings | undefined,
+) {
 	if (isCurrentCacheToken(cacheToken)) {
 		const cachedFactory = extensionCache.get(extensionPath);
 		if (cachedFactory) {
@@ -597,10 +609,13 @@ async function loadExtensionModule(extensionPath: string, cacheToken?: Extension
 	// Source TypeScript reuses host modules and root tsconfig paths. Unbundled
 	// Node builds use dist aliases and do not need the bundled virtual modules.
 	const resolutionOptions = usesEmbeddedModules
-		? { virtualModules: await getVirtualModules(), tryNative: false }
+		? { virtualModules: { ...(await getVirtualModules()), ...moduleBindings?.virtualModules }, tryNative: false }
 		: isTypeScriptSourceRuntime
-			? { virtualModules: await getVirtualModules(), tsconfigPaths: true }
-			: { alias: getAliases() };
+			? {
+					virtualModules: { ...(await getVirtualModules()), ...moduleBindings?.virtualModules },
+					tsconfigPaths: true,
+				}
+			: { alias: { ...getAliases(), ...moduleBindings?.getAliases() } };
 	const jiti = createJitiImpl(import.meta.url, {
 		moduleCache: false,
 		...resolutionOptions,
@@ -665,11 +680,12 @@ async function loadExtension(
 	eventBus: EventBus,
 	runtime: ExtensionRuntime,
 	cacheToken?: ExtensionCacheToken,
+	moduleBindings?: ExtensionModuleBindings,
 ): Promise<{ extension: Extension | null; error: string | null }> {
 	const resolvedPath = resolvePath(extensionPath, cwd, { normalizeUnicodeSpaces: true });
 
 	try {
-		const factory = await loadExtensionModule(resolvedPath, cacheToken);
+		const factory = await loadExtensionModule(resolvedPath, cacheToken, moduleBindings);
 		time(`${extensionPath} module import`, "extensions");
 		if (!factory) {
 			return { extension: null, error: `Extension does not export a valid factory function: ${extensionPath}` };
@@ -707,11 +723,12 @@ async function loadExtensionsInternal(
 	eventBus?: EventBus,
 	runtime?: ExtensionRuntime,
 	useCache = false,
+	moduleBindings?: ExtensionModuleBindings,
 ): Promise<LoadExtensionsResult> {
 	const extensions: Extension[] = [];
 	const errors: Array<{ path: string; error: string }> = [];
 	const warnings: Array<{ path: string; warning: string }> = [];
-	const cacheToken = useCache ? useExtensionCacheCwd(cwd) : undefined;
+	const cacheToken = useCache ? useExtensionCacheCwd(cwd, moduleBindings) : undefined;
 	const resolvedCwd = cacheToken?.cwd ?? resolvePath(cwd);
 	const resolvedEventBus = eventBus ?? createEventBus();
 	const resolvedRuntime = runtime ?? createExtensionRuntime();
@@ -723,6 +740,7 @@ async function loadExtensionsInternal(
 			resolvedEventBus,
 			resolvedRuntime,
 			cacheToken,
+			moduleBindings,
 		);
 
 		if (error) {
@@ -757,8 +775,9 @@ export async function loadExtensionsCached(
 	cwd: string,
 	eventBus?: EventBus,
 	runtime?: ExtensionRuntime,
+	moduleBindings?: ExtensionModuleBindings,
 ): Promise<LoadExtensionsResult> {
-	return loadExtensionsInternal(paths, cwd, eventBus, runtime, true);
+	return loadExtensionsInternal(paths, cwd, eventBus, runtime, true, moduleBindings);
 }
 
 function isExtensionFile(name: string): boolean {

@@ -19,7 +19,7 @@ powershell -c "irm https://pi.dev/install.ps1 | iex"
 Both installers pin all dependencies and update Pi with `pi update`. Alternatively, install Pi from npm, which does not pin transitive dependencies. This requires Node.js 22.19 or newer:
 
 ```bash
-npm install -g --ignore-scripts @earendil-works/pi-coding-agent
+npm install -g --ignore-scripts @earendil-works/pi-tui
 ```
 
 Pi does not require dependency lifecycle scripts for a normal npm installation.

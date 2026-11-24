@@ -2,16 +2,16 @@ import { chmodSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "fs";
 import { tmpdir } from "os";
 import { delimiter, join } from "path";
 import { afterEach, describe, expect, test } from "vitest";
+import { findNodePackageDir } from "../../tui/src/host/config.ts";
 import {
 	detectInstallChange,
 	detectInstallMethod,
-	findNodePackageDir,
 	getConfiguredSelfUpdateArgv,
 	getSelfUpdateCommand,
 	getSelfUpdateUnavailableInstruction,
 	getUpdateInstruction,
 	makeConfiguredSelfUpdateCommand,
-} from "../src/config.ts";
+} from "../../tui/src/host/self-update.ts";
 
 const execPathDescriptor = Object.getOwnPropertyDescriptor(process, "execPath");
 const originalPath = process.env.PATH;

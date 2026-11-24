@@ -9,13 +9,13 @@ import {
 	type Model,
 } from "@earendil-works/pi-ai/compat";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { runRpcMode } from "../../tui/src/host/modes/rpc/rpc-mode.ts";
 import { AgentSession } from "../src/core/agent-session.ts";
 import type { AgentSessionRuntime } from "../src/core/agent-session-runtime.ts";
 import { AuthStorage } from "../src/core/auth-storage.ts";
 import type { LoadExtensionsResult } from "../src/core/extensions/index.ts";
 import { SessionManager } from "../src/core/session-manager.ts";
 import { SettingsManager } from "../src/core/settings-manager.ts";
-import { runRpcMode } from "../src/modes/rpc/rpc-mode.ts";
 import type * as Shell from "../src/utils/shell.ts";
 import { killTrackedDetachedChildren } from "../src/utils/shell.ts";
 import { createInMemoryModelRegistry, getModelRuntime } from "./model-runtime-test-utils.ts";
@@ -35,14 +35,14 @@ vi.mock("../src/core/output-guard.js", () => ({
 	},
 }));
 
-vi.mock("../src/modes/interactive/theme/theme.js", () => ({ theme: {} }));
+vi.mock("../../tui/src/host/modes/interactive/theme/theme.ts", () => ({ theme: {} }));
 
 vi.mock("../src/utils/shell.js", async (importOriginal) => {
 	const actual = await importOriginal<typeof Shell>();
 	return { ...actual, killTrackedDetachedChildren: vi.fn(actual.killTrackedDetachedChildren) };
 });
 
-vi.mock("../src/modes/rpc/jsonl.js", () => ({
+vi.mock("../../tui/src/host/modes/rpc/jsonl.ts", () => ({
 	attachJsonlLineReader: vi.fn((_stream: NodeJS.ReadableStream, onLine: (line: string) => void) => {
 		rpcIo.lineHandler = onLine;
 		return () => {};

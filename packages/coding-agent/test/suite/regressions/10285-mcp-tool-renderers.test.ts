@@ -2,14 +2,20 @@ import { mkdtempSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { describe, expect, it } from "vitest";
+import { exportAgentSessionToHtml } from "../../../../tui/src/host/core/export-html/index.ts";
+import { readRenderers, withBuiltInRenderers } from "../../../../tui/src/host/core/tools/renderers/index.ts";
+import { resolveMcpToolRenderers } from "../../../../tui/src/host/extensions/mcp/renderer.ts";
+import { initTheme, theme } from "../../../../tui/src/host/modes/interactive/theme/theme.ts";
 import type { ToolRenderContext } from "../../../src/core/extensions/types.ts";
 import { SessionManager } from "../../../src/core/session-manager.ts";
 import { createMcpExtension } from "../../../src/extensions/mcp/index.ts";
-import { initTheme, theme } from "../../../src/modes/interactive/theme/theme.ts";
 import { stripAnsi } from "../../../src/utils/ansi.ts";
 import { createHarness } from "../harness.ts";
 
-const mcpExtension = createMcpExtension({ loadConfig: () => ({ servers: [], errors: [] }) });
+const mcpExtension = createMcpExtension({
+	loadConfig: () => ({ servers: [], errors: [] }),
+	renderTool: resolveMcpToolRenderers,
+});
 
 describe("MCP tool renderers", () => {
 	// Regression #10285: a resumed session renders MCP tool calls before their server connected, if it
@@ -20,7 +26,7 @@ describe("MCP tool renderers", () => {
 		try {
 			const resolve = (toolName: string) =>
 				harness.session.extensionRunner.resolveToolRenderers(toolName, () =>
-					harness.session.getToolDefinition(toolName),
+					withBuiltInRenderers(toolName, harness.session.getToolDefinition(toolName)),
 				);
 
 			const call = resolve("mcp__my_docs__search")?.renderCall?.({ query: "pi" }, theme, {
@@ -29,7 +35,7 @@ describe("MCP tool renderers", () => {
 			expect(stripAnsi(call?.render(100).join("\n") ?? "")).toContain('my_docs/search query="pi"');
 			expect(resolve("not_mcp")).toBeUndefined();
 			// Registered tools keep their own renderers.
-			expect(resolve("read")?.renderCall).toBe(harness.session.getToolDefinition("read")?.renderCall);
+			expect(resolve("read")?.renderCall).toBe(readRenderers.renderCall);
 		} finally {
 			harness.cleanup();
 		}
@@ -60,7 +66,7 @@ describe("MCP tool renderers", () => {
 				timestamp: 2,
 			});
 
-			const html = readFileSync(await harness.session.exportToHtml(join(dir, "export.html")), "utf8");
+			const html = readFileSync(await exportAgentSessionToHtml(harness.session, join(dir, "export.html")), "utf8");
 			const data = /<script id="session-data" type="application\/json">([^<]*)<\/script>/.exec(html)?.[1] ?? "";
 			const session = JSON.parse(Buffer.from(data, "base64").toString("utf8"));
 			expect(stripAnsi(session.renderedTools?.["call-1"]?.callHtml ?? "")).toContain("my_docs/search");

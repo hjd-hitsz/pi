@@ -1,12 +1,26 @@
 {
 	"name": "@earendil-works/pi-tui",
 	"version": "1.6.0",
-	"description": "Terminal User Interface library with differential rendering for efficient text-based applications",
+	"description": "Terminal UI library and CLI host for the Pi coding agent SDK",
 	"type": "module",
 	"main": "dist/index.js",
+	"bin": {
+		"pi": "dist/bundle/cli.js"
+	},
+	"exports": {
+		".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+		"./host": { "types": "./dist/host/index.d.ts", "import": "./dist/host/index.js" },
+		"./extension-api": { "types": "./dist/host/extension-api.d.ts", "import": "./dist/host/extension-api.js" },
+		"./rpc-entry": { "import": "./dist/bundle/rpc-entry.js" }
+	},
 	"scripts": {
 		"clean": "node ../../scripts/package-files.mjs clean dist",
-		"build": "tsc -p tsconfig.build.json",
+		"build": "npm run build:unbundled && node ../../scripts/build-tui-launchers.mjs",
+		"build:bundle": "npm run build:unbundled && node ../../scripts/build-coding-agent-bundle.mjs",
+		"build:binary": "bash ../../scripts/build-binaries.sh",
+		"build:unbundled": "tsc -p tsconfig.build.json && node ../../scripts/package-files.mjs executable dist/host/cli.js dist/host/rpc-entry.js && npm run copy-assets && npm run copy-guide",
+		"copy-guide": "node ../../scripts/package-files.mjs copy ../coding-agent/docs ../coding-agent/examples examples dist/host",
+		"copy-assets": "node ../../scripts/package-files.mjs copy \"src/host/modes/interactive/theme/*.json\" dist/host/modes/interactive/theme && node ../../scripts/package-files.mjs copy \"src/host/modes/interactive/assets/*.png\" dist/host/modes/interactive/assets && node ../../scripts/package-files.mjs copy src/host/core/export-html/template.html src/host/core/export-html/template.css src/host/core/export-html/template.js dist/host/core/export-html && node ../../scripts/package-files.mjs copy \"src/host/core/export-html/vendor/*.js\" dist/host/core/export-html/vendor",
 		"build:native:darwin": "native/darwin/build.sh",
 		"build:native:linux": "native/linux/build.sh",
 		"build:native:win32": "node native/win32/build.mjs",
@@ -15,6 +29,8 @@
 	},
 	"files": [
 		"dist/**/*",
+		"!dist/standalone/**",
+		"examples",
 		"native/napi.h",
 		"native/clipboard.h",
 		"native/win32/prebuilds/**/*.node",
@@ -52,12 +68,28 @@
 	},
 	"types": "./dist/index.d.ts",
 	"dependencies": {
+		"@earendil-works/pi-agent-core": "1.6.0",
+		"@earendil-works/pi-ai": "1.6.0",
+		"@earendil-works/pi-coding-agent": "1.6.0",
+		"chalk": "6.0.0",
+		"diff": "8.0.4",
 		"get-east-asian-width": "1.6.0",
+		"highlight.js": "10.7.3",
+		"lovely-mermaid": "0.3.3",
 		"marked": "18.0.11",
-		"marked-cjk-friendly": "0.1.2"
+		"marked-cjk-friendly": "0.1.2",
+		"proper-lockfile": "4.1.2",
+		"quickjs-wasi": "3.6.2",
+		"semver": "7.8.5",
+		"typebox": "1.3.27"
+	},
+	"overrides": {
+		"protobufjs": "7.6.6"
 	},
 	"devDependencies": {
-		"@xterm/headless": "5.5.0",
-		"chalk": "6.0.0"
+		"@types/node": "22.19.19",
+		"@types/proper-lockfile": "4.1.4",
+		"@types/semver": "7.7.1",
+		"@xterm/headless": "5.5.0"
 	}
 }

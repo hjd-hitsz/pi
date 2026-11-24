@@ -10,11 +10,9 @@ import {
 	type Provider,
 	type ProviderHeaders,
 } from "@earendil-works/pi-ai";
-import type { KeyId } from "@earendil-works/pi-tui";
-import { type Theme, theme } from "../../modes/interactive/theme/theme.ts";
 import type { CacheWarmingAction } from "../cache-warmer.ts";
 import type { ResourceDiagnostic } from "../diagnostics.ts";
-import type { KeybindingsConfig } from "../keybindings.ts";
+import type { KeybindingsConfig, KeyId } from "../extension-host-types.ts";
 import type { ModelRegistry } from "../model-registry.ts";
 import type { ScopedModel } from "../model-resolver.ts";
 import type { SessionManager } from "../session-manager.ts";
@@ -329,6 +327,12 @@ export async function emitProjectTrustEvent(
 	return { errors };
 }
 
+const unavailableTheme = new Proxy({} as ExtensionUIContext["theme"], {
+	get() {
+		throw new Error("No theme is available without an extension UI host.");
+	},
+});
+
 const noOpUIContext: ExtensionUIContext = {
 	select: async () => undefined,
 	confirm: async () => false,
@@ -352,12 +356,10 @@ const noOpUIContext: ExtensionUIContext = {
 	addAutocompleteProvider: () => {},
 	setEditorComponent: () => {},
 	getEditorComponent: () => undefined,
-	get theme() {
-		return theme;
-	},
+	theme: unavailableTheme,
 	getAllThemes: () => [],
 	getTheme: () => undefined,
-	setTheme: (_theme: string | Theme) => ({ success: false, error: "UI not available" }),
+	setTheme: () => ({ success: false, error: "UI not available" }),
 	getToolsExpanded: () => false,
 	setToolsExpanded: () => {},
 };

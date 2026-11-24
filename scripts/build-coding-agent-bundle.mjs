@@ -9,9 +9,11 @@ import { build } from "esbuild";
 const scriptDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(scriptDir, "..");
 const codingAgentDir = join(repoRoot, "packages", "coding-agent");
+const tuiDistDir = join(repoRoot, "packages", "tui", "dist");
+const hostDistDir = join(tuiDistDir, "host");
 const aiDistDir = join(repoRoot, "packages", "ai", "dist");
 const codingAgentDistDir = join(codingAgentDir, "dist");
-const bundleDir = join(codingAgentDistDir, "bundle");
+const bundleDir = join(tuiDistDir, "standalone");
 const banner = {
 	js: 'import { createRequire as __piCreateRequire } from "node:module"; const require = __piCreateRequire(import.meta.url);',
 };
@@ -138,9 +140,9 @@ function outputBytes(metafiles) {
 }
 
 for (const entry of [
-	join(codingAgentDistDir, "cli.js"),
-	join(codingAgentDistDir, "index.js"),
-	join(codingAgentDistDir, "rpc-entry.js"),
+	join(hostDistDir, "cli.js"),
+	join(hostDistDir, "extension-api.js"),
+	join(hostDistDir, "rpc-entry.js"),
 	join(codingAgentDistDir, "utils", "image-resize-worker.js"),
 	join(codingAgentDistDir, "extensions", "codemode", "worker.js"),
 	join(aiDistDir, "api", "bedrock-converse-stream.js"),
@@ -158,9 +160,9 @@ const mainResult = await build({
 	...commonBuildOptions(),
 	entryNames: "[name]",
 	entryPoints: {
-		"cli-runtime": join(codingAgentDistDir, "cli.js"),
-		index: join(codingAgentDistDir, "index.js"),
-		"rpc-entry": join(codingAgentDistDir, "rpc-entry.js"),
+		"cli-runtime": join(hostDistDir, "cli.js"),
+		index: join(hostDistDir, "extension-api.js"),
+		"rpc-entry": join(hostDistDir, "rpc-entry.js"),
 	},
 	outdir: bundleDir,
 	chunkNames: "chunks/[name]-[hash]",

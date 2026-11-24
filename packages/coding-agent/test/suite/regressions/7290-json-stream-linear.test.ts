@@ -1,6 +1,6 @@
 import { fauxAssistantMessage } from "@earendil-works/pi-ai";
 import { afterEach, describe, expect, it } from "vitest";
-import { toJsonEvent } from "../../../src/modes/json-event.ts";
+import { toJsonEvent } from "../../../../tui/src/host/modes/json-event.ts";
 import { createHarness, type Harness } from "../harness.ts";
 
 describe("regression #7290: JSON event streams stay linear", () => {

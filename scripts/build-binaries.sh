@@ -123,8 +123,7 @@ for platform in "${PLATFORMS[@]}"; do
 
     # Bun compiled executables only embed worker scripts when they are passed as
     # explicit build entrypoints. Bun places them at their path relative to the
-    # common directory of all entrypoints, so the main entry must stay in dist/
-    # for the worker specifiers in the runtime to resolve.
+    # common directory of all entrypoints (packages/).
     #
     # Disable cwd bunfig.toml autoload so project preload scripts cannot crash the
     # standalone binary before pi starts (see #7684). Disable cwd .env autoload so
@@ -132,9 +131,9 @@ for platform in "${PLATFORMS[@]}"; do
     # package.json autoload so extension dependencies resolve through their
     # package.json main/exports entries instead of only a root index.* (see #12012).
     if [[ "$platform" == windows-* ]]; then
-        bun build --compile --no-compile-autoload-bunfig --no-compile-autoload-dotenv --compile-autoload-package-json --target="$bun_target" ./dist/bun/cli.js ./src/utils/image-resize-worker.ts ./src/extensions/codemode/worker.ts --outfile "$OUTPUT_DIR/$platform/pi.exe"
+        bun build --compile --no-compile-autoload-bunfig --no-compile-autoload-dotenv --compile-autoload-package-json --target="$bun_target" ../tui/dist/host/bun/cli.js ./src/utils/image-resize-worker.ts ./src/extensions/codemode/worker.ts --outfile "$OUTPUT_DIR/$platform/pi.exe"
     else
-        bun build --compile --no-compile-autoload-bunfig --no-compile-autoload-dotenv --compile-autoload-package-json --target="$bun_target" ./dist/bun/cli.js ./src/utils/image-resize-worker.ts ./src/extensions/codemode/worker.ts --outfile "$OUTPUT_DIR/$platform/pi"
+        bun build --compile --no-compile-autoload-bunfig --no-compile-autoload-dotenv --compile-autoload-package-json --target="$bun_target" ../tui/dist/host/bun/cli.js ./src/utils/image-resize-worker.ts ./src/extensions/codemode/worker.ts --outfile "$OUTPUT_DIR/$platform/pi"
     fi
 done
 
@@ -147,12 +146,12 @@ for platform in "${PLATFORMS[@]}"; do
     cp CHANGELOG.md "$OUTPUT_DIR/$platform/"
     cp ../../node_modules/@silvia-odwyer/photon-node/photon_rs_bg.wasm "$OUTPUT_DIR/$platform/"
     mkdir -p "$OUTPUT_DIR/$platform/theme"
-    cp dist/modes/interactive/theme/*.json "$OUTPUT_DIR/$platform/theme/"
+    cp ../tui/dist/host/modes/interactive/theme/*.json "$OUTPUT_DIR/$platform/theme/"
     mkdir -p "$OUTPUT_DIR/$platform/assets"
-    cp dist/modes/interactive/assets/* "$OUTPUT_DIR/$platform/assets/"
-    cp -r dist/core/export-html "$OUTPUT_DIR/$platform/"
-    cp -r docs "$OUTPUT_DIR/$platform/"
-    cp -r examples "$OUTPUT_DIR/$platform/"
+    cp ../tui/dist/host/modes/interactive/assets/* "$OUTPUT_DIR/$platform/assets/"
+    cp -r ../tui/dist/host/core/export-html "$OUTPUT_DIR/$platform/"
+    cp -r ../tui/dist/host/docs "$OUTPUT_DIR/$platform/"
+    cp -r ../tui/dist/host/examples "$OUTPUT_DIR/$platform/"
 
     # Copy the selected architecture's native platform helpers next to the executable.
     native_platform="${platform/windows-/win32-}"

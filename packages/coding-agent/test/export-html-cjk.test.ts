@@ -3,9 +3,9 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createContext, runInContext } from "node:vm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { exportFromFile } from "../src/core/export-html/index.ts";
+import { exportFromFile } from "../../tui/src/host/core/export-html/index.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import { CURRENT_SESSION_VERSION, type SessionHeader } from "../src/core/session-manager.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
 
 function loadMarkdownParser(html: string): (text: string) => string {
 	const sessionData = html.match(/<script id="session-data" type="application\/json">([^<]+)<\/script>/)?.[1];

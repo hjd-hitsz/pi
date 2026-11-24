@@ -10,3 +10,7 @@ export const THINKING_LEVEL_OPTIONS: readonly ThinkingLevel[] = [
 	"xhigh",
 	"max",
 ];
+
+export function isValidThinkingLevel(level: string): level is ThinkingLevel {
+	return THINKING_LEVEL_OPTIONS.includes(level as ThinkingLevel);
+}

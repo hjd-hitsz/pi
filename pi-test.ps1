@@ -60,7 +60,7 @@ if ($noEnv) {
 
 # --import takes a module specifier, so pass the resolver as a file URL (Windows paths are not specifiers).
 $resolverUrl = ([System.Uri](Join-Path $scriptDir "packages/coding-agent/src/experimental/source-resolver.ts")).AbsoluteUri
-$cliPath = Join-Path $scriptDir "packages/coding-agent/src/cli.ts"
+$cliPath = Join-Path $scriptDir "packages/tui/src/host/cli.ts"
 & node --import $resolverUrl $cliPath @forwardArgs
 $exitCode = $LASTEXITCODE
 if ($exitCode -ne 0) {

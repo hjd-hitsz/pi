@@ -1,7 +1,7 @@
 import type { NativeClipboard } from "@earendil-works/pi-tui";
 import { writeFileSync } from "fs";
 import { beforeEach, describe, expect, test, vi } from "vitest";
-import { readClipboardImage } from "../src/utils/clipboard-image.ts";
+import { readClipboardImage } from "../../tui/src/host/utils/clipboard-image.ts";
 
 const mocks = vi.hoisted(() => ({
 	command: vi.fn<(command: string, args: string[], options?: unknown) => Promise<Buffer | undefined>>(),

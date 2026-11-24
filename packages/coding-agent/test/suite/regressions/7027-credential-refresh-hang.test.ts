@@ -1,9 +1,9 @@
 import type { Api, Model, Provider } from "@earendil-works/pi-ai";
 import { afterEach, describe, expect, it, vi } from "vitest";
+import { InteractiveMode } from "../../../../tui/src/host/modes/interactive/interactive-mode.ts";
 import { AuthStorage } from "../../../src/core/auth-storage.ts";
 import { defaultModelPerProvider } from "../../../src/core/model-resolver.ts";
 import { ModelRuntime } from "../../../src/core/model-runtime.ts";
-import { InteractiveMode } from "../../../src/modes/interactive/interactive-mode.ts";
 import { createHarness, type Harness } from "../harness.ts";
 
 const complete = Reflect.get(InteractiveMode.prototype, "completeProviderAuthentication") as (

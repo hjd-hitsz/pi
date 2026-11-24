@@ -4,14 +4,14 @@ import {
 	generateSystemThemeColors,
 	type SystemThemeInput,
 	wcagContrast,
-} from "../src/modes/interactive/theme/system-theme.ts";
+} from "../../tui/src/host/modes/interactive/theme/system-theme.ts";
 import {
 	getAvailableThemes,
 	getThemeByName,
 	getThemeExportColors,
 	setTerminalColors,
 	type ThemeToken,
-} from "../src/modes/interactive/theme/theme.ts";
+} from "../../tui/src/host/modes/interactive/theme/theme.ts";
 
 const rgb = (hex: string): RgbColor => colorToRgb(parseColor(hex));
 const lightness = ({ r, g, b }: RgbColor) => colorToOklch(rgbColor(r, g, b)).l;

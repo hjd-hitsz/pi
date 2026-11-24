@@ -1,10 +1,10 @@
 import { setKeybindings, type TUI } from "@earendil-works/pi-tui";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { KeybindingsManager } from "../src/core/keybindings.ts";
-import { LoginDialogComponent } from "../src/modes/interactive/components/login-dialog.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
+import { KeybindingsManager } from "../../tui/src/host/core/keybindings.ts";
+import { LoginDialogComponent } from "../../tui/src/host/modes/interactive/components/login-dialog.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
+import { copyToClipboard } from "../../tui/src/host/utils/clipboard.ts";
 import { stripAnsi } from "../src/utils/ansi.ts";
-import { copyToClipboard } from "../src/utils/clipboard.ts";
 import { openBrowser } from "../src/utils/open-browser.ts";
 
 vi.mock("../src/utils/clipboard.ts", () => ({ copyToClipboard: vi.fn() }));

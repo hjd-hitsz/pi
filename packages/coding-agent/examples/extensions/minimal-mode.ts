@@ -25,10 +25,10 @@ import {
 	createLsToolDefinition,
 	createReadToolDefinition,
 	createWriteToolDefinition,
-	formatReadLineRange,
 } from "@earendil-works/pi-coding-agent";
 import { Text } from "@earendil-works/pi-tui";
 import { homedir } from "os";
+import { formatReadLineRange } from "../../../tui/src/host/index.ts";
 
 /**
  * Shorten a path by replacing home directory with ~

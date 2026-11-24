@@ -9,7 +9,7 @@ vi.mock("../src/utils/image-resize.js", () => ({
 	formatDimensionNote: vi.fn(() => undefined),
 }));
 
-import { processFileArguments } from "../src/cli/file-processor.ts";
+import { processFileArguments } from "../../tui/src/host/cli/file-processor.ts";
 import type { ExtensionToolContext } from "../src/core/extensions/types.ts";
 import { createReadTool, createReadToolDefinition } from "../src/core/tools/read.ts";
 import { resizeImage } from "../src/utils/image-resize.ts";

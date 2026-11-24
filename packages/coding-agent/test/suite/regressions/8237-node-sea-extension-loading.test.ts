@@ -32,7 +32,7 @@ vi.mock("../../../src/core/extensions/virtual-modules.ts", () => {
 	};
 });
 
-import { loadExtensions } from "../../../src/core/extensions/loader.ts";
+import { loadExtensions, loadExtensionsCached } from "../../../src/core/extensions/loader.ts";
 
 interface JitiOptionsProbe {
 	alias?: unknown;
@@ -67,5 +67,24 @@ describe("Node SEA extension loading", () => {
 		expect(options.alias).toBeUndefined();
 		expect(options.virtualModules?.typebox).toBeDefined();
 		expect(options.virtualModules?.["@earendil-works/pi-coding-agent"]).toBeDefined();
+	});
+
+	it("does not reuse an extension factory cached with a different host module map", async () => {
+		const tuiModule = { name: "terminal host" };
+		const bindings = {
+			virtualModules: { "@earendil-works/pi-tui": tuiModule },
+			getAliases: () => ({}),
+		};
+		const callsBefore = state.createJiti.mock.calls.length;
+		await loadExtensionsCached(["/bound-extension.ts"], "/", undefined, undefined, bindings);
+		await loadExtensionsCached(["/bound-extension.ts"], "/", undefined, undefined, bindings);
+		await loadExtensionsCached(["/bound-extension.ts"], "/");
+
+		const calls = state.createJiti.mock.calls.slice(callsBefore);
+		expect(calls).toHaveLength(2);
+		const terminalOptions = calls[0][1] as JitiOptionsProbe;
+		const sdkOptions = calls[1][1] as JitiOptionsProbe;
+		expect(terminalOptions.virtualModules?.["@earendil-works/pi-tui"]).toBe(tuiModule);
+		expect(sdkOptions.virtualModules?.["@earendil-works/pi-tui"]).toBeUndefined();
 	});
 });

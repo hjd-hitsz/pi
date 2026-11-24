@@ -3,6 +3,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { fauxAssistantMessage, registerFauxProvider } from "@earendil-works/pi-ai/compat";
 import { afterEach, describe, expect, test, vi } from "vitest";
+import { runRpcMode } from "../../../../tui/src/host/modes/rpc/rpc-mode.ts";
 import {
 	type AgentSessionRuntime,
 	type CreateAgentSessionRuntimeFactory,
@@ -14,7 +15,6 @@ import { AuthStorage } from "../../../src/core/auth-storage.ts";
 import { ModelRuntime } from "../../../src/core/model-runtime.ts";
 import { SessionManager } from "../../../src/core/session-manager.ts";
 import type { ExtensionAPI } from "../../../src/index.ts";
-import { runRpcMode } from "../../../src/modes/rpc/rpc-mode.ts";
 
 // Regression for https://github.com/earendil-works/pi/issues/10470
 
@@ -32,9 +32,9 @@ vi.mock("../../../src/core/output-guard.js", () => ({
 	},
 }));
 
-vi.mock("../../../src/modes/interactive/theme/theme.js", () => ({ theme: {} }));
+vi.mock("../../../../tui/src/host/modes/interactive/theme/theme.ts", () => ({ theme: {} }));
 
-vi.mock("../../../src/modes/rpc/jsonl.js", () => ({
+vi.mock("../../../../tui/src/host/modes/rpc/jsonl.ts", () => ({
 	attachJsonlLineReader: vi.fn((_stream: NodeJS.ReadableStream, onLine: (line: string) => void) => {
 		rpcIo.lineHandler = onLine;
 		return () => {

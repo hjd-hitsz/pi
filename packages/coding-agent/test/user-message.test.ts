@@ -1,6 +1,6 @@
 import { describe, expect, test } from "vitest";
-import { UserMessageComponent } from "../src/modes/interactive/components/user-message.ts";
-import { initTheme } from "../src/modes/interactive/theme/theme.ts";
+import { UserMessageComponent } from "../../tui/src/host/modes/interactive/components/user-message.ts";
+import { initTheme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import { stripAnsi } from "../src/utils/ansi.ts";
 
 const OSC133_ZONE_START = "\x1b]133;A\x07";

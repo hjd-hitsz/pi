@@ -3,12 +3,16 @@ import { createServer, type RequestListener, type Server, type ServerResponse } 
 import type { AddressInfo } from "node:net";
 import type { AuthContext, AuthPrompt, ModelsPublication, ModelsStoreEntry } from "@earendil-works/pi-ai";
 import { afterEach, describe, expect, it } from "vitest";
+import {
+	LlamaClient,
+	type LlamaProgress,
+	normalizeLlamaServerUrl,
+} from "../../tui/src/host/extensions/llama/client.ts";
+import { findHuggingFaceToken, HuggingFaceClient } from "../../tui/src/host/extensions/llama/huggingface.ts";
+import llamaExtension from "../../tui/src/host/extensions/llama/index.ts";
+import { createLlamaProvider, LLAMA_PROVIDER_ID } from "../../tui/src/host/extensions/llama/provider.ts";
 import { createEventBus } from "../src/core/event-bus.ts";
 import { createExtensionRuntime, loadExtensionFromFactory } from "../src/core/extensions/loader.ts";
-import { LlamaClient, type LlamaProgress, normalizeLlamaServerUrl } from "../src/extensions/llama/client.ts";
-import { findHuggingFaceToken, HuggingFaceClient } from "../src/extensions/llama/huggingface.ts";
-import llamaExtension from "../src/extensions/llama/index.ts";
-import { createLlamaProvider, LLAMA_PROVIDER_ID } from "../src/extensions/llama/provider.ts";
 
 const servers: Server[] = [];
 

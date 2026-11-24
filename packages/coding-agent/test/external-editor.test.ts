@@ -3,7 +3,10 @@ import { tmpdir } from "node:os";
 import { basename, dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it, vi } from "vitest";
-import { type ExternalEditorResult, editInExternalEditor } from "../src/modes/interactive/external-editor.ts";
+import {
+	type ExternalEditorResult,
+	editInExternalEditor,
+} from "../../tui/src/host/modes/interactive/external-editor.ts";
 
 const editorFixturePath = fileURLToPath(new URL("./fixtures/fake-external-editor.mjs", import.meta.url));
 

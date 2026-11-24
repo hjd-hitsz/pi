@@ -4,7 +4,7 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import type { AgentEvent } from "@earendil-works/pi-agent-core";
 import { afterEach, beforeEach, describe, expect, test } from "vitest";
-import { RpcClient } from "../src/modes/rpc/rpc-client.ts";
+import { RpcClient } from "../../tui/src/host/modes/rpc/rpc-client.ts";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
@@ -18,7 +18,7 @@ describe.skipIf(!process.env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_OAUTH_T
 	beforeEach(() => {
 		sessionDir = join(tmpdir(), `pi-rpc-test-${Date.now()}`);
 		client = new RpcClient({
-			cliPath: join(__dirname, "..", "dist", "cli.js"),
+			cliPath: join(__dirname, "../../tui/dist/bundle/cli.js"),
 			cwd: join(__dirname, ".."),
 			env: { PI_CODING_AGENT_DIR: sessionDir },
 			provider: "anthropic",

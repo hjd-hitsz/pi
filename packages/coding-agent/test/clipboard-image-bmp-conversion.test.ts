@@ -6,7 +6,7 @@
  * instead of image/png.
  */
 import { describe, expect, test, vi } from "vitest";
-import { readClipboardImage } from "../src/utils/clipboard-image.ts";
+import { readClipboardImage } from "../../tui/src/host/utils/clipboard-image.ts";
 
 function createTinyBmp1x1Red24bpp(): Uint8Array {
 	// Minimal 1x1 24bpp BMP (BGR + row padding to 4 bytes)

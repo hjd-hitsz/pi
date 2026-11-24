@@ -14,11 +14,11 @@ import {
 } from "../../utils/shell.ts";
 import type { ExtensionContext, ToolDefinition } from "../extensions/types.ts";
 import { OutputAccumulator, type OutputSnapshot } from "./output-accumulator.ts";
-import { BASH_UPDATE_THROTTLE_MS, createShellRenderers } from "./renderers/bash.ts";
 import { type TypeBoxAgentTool, wrapToolDefinition } from "./tool-definition-wrapper.ts";
 import { DEFAULT_MAX_BYTES, DEFAULT_MAX_LINES, formatSize, type TruncationResult } from "./truncate.ts";
 
 const MAX_TIMEOUT_MS = 2_147_483_647;
+const BASH_UPDATE_THROTTLE_MS = 100;
 /** Output limit of `structuredContent.output`, which programmatic callers such as codemode scripts receive. */
 const STRUCTURED_OUTPUT_MAX_BYTES = 1024 * 1024;
 const MAX_TIMEOUT_SECONDS = MAX_TIMEOUT_MS / 1000;
@@ -267,7 +267,6 @@ export interface ShellToolConfig {
 	name: string;
 	label: string;
 	shellName: string;
-	prompt: string;
 	promptSnippet: string;
 	promptGuidelines?: readonly string[];
 	tempFilePrefix: string;
@@ -457,7 +456,6 @@ export function createShellToolDefinition(
 				clearUpdateTimer();
 			}
 		},
-		...createShellRenderers(config.prompt),
 	};
 }
 
@@ -472,7 +470,6 @@ const bashToolConfig: ShellToolConfig = {
 	name: "bash",
 	label: "bash",
 	shellName: "bash",
-	prompt: "$",
 	promptSnippet: bashToolSystemPromptContribution.snippet,
 	promptGuidelines: bashToolSystemPromptContribution.guidelines,
 	tempFilePrefix: "pi-bash",

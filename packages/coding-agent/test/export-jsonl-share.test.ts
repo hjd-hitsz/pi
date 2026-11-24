@@ -5,11 +5,11 @@ import type { AssistantMessage, ToolResultMessage } from "@earendil-works/pi-ai/
 import { getModel } from "@earendil-works/pi-ai/compat";
 import { Type } from "typebox";
 import { afterEach, describe, expect, it } from "vitest";
+import { exportSessionForShare } from "../../tui/src/host/modes/interactive/session-share.ts";
 import { defineTool } from "../src/core/extensions/types.ts";
 import { createAgentSession } from "../src/core/sdk.ts";
 import { SessionManager } from "../src/core/session-manager.ts";
 import { SettingsManager } from "../src/core/settings-manager.ts";
-import { exportSessionForShare } from "../src/modes/interactive/session-share.ts";
 import { assistantMsg, userMsg } from "./utilities.ts";
 
 describe("JSONL share export", () => {

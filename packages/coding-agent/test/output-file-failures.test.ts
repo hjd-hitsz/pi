@@ -51,6 +51,9 @@ vi.mock("node:fs", async (importOriginal) => {
 	};
 });
 
+import { createShellRenderers } from "../../tui/src/host/core/tools/renderers/bash.ts";
+import { BashExecutionComponent } from "../../tui/src/host/modes/interactive/components/bash-execution.ts";
+import { initTheme, theme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import { executeBashWithOperations } from "../src/core/bash-executor.ts";
 import { type BashExecutionMessage, bashExecutionToText } from "../src/core/messages.ts";
 import {
@@ -58,11 +61,8 @@ import {
 	type BashToolDetails,
 	type BashToolOutput,
 	createBashTool,
-	createBashToolDefinition,
 } from "../src/core/tools/bash.ts";
 import type { TruncationResult } from "../src/core/tools/truncate.ts";
-import { BashExecutionComponent } from "../src/modes/interactive/components/bash-execution.ts";
-import { initTheme, theme } from "../src/modes/interactive/theme/theme.ts";
 import { stripAnsi } from "../src/utils/ansi.ts";
 import { createOutputFileStream, type OutputFileStream } from "../src/utils/output-files.ts";
 
@@ -236,7 +236,7 @@ describe("bash tool", () => {
 		const code = failOutputFiles("open");
 		const operations = printing(LONG);
 		const result = await createBashTool(tempRoot, { operations }).execute("call", { command: "seq 300000" });
-		const component = createBashToolDefinition(tempRoot, { operations }).renderResult!(
+		const component = createShellRenderers("$").renderResult!(
 			result as { content: (typeof result)["content"]; details: BashToolDetails },
 			{ expanded: false, isPartial: false },
 			theme,

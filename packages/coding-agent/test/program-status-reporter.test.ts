@@ -1,8 +1,8 @@
 import type { AssistantMessage } from "@earendil-works/pi-ai";
 import type { ProgramStatus, Terminal } from "@earendil-works/pi-tui";
 import { describe, expect, it } from "vitest";
+import { ProgramStatusReporter } from "../../tui/src/host/modes/interactive/program-status-reporter.ts";
 import type { AgentSessionEvent } from "../src/core/agent-session.ts";
-import { ProgramStatusReporter } from "../src/modes/interactive/program-status-reporter.ts";
 
 function setup(sessionName?: string) {
 	const reports: ProgramStatus[] = [];

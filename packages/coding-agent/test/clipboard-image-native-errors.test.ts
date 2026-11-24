@@ -1,6 +1,6 @@
 import type * as Tui from "@earendil-works/pi-tui";
 import { afterEach, expect, test, vi } from "vitest";
-import { InteractiveMode } from "../src/modes/interactive/interactive-mode.ts";
+import { InteractiveMode } from "../../tui/src/host/modes/interactive/interactive-mode.ts";
 
 const readClipboardText = vi.hoisted(() => vi.fn<() => Promise<string | null>>());
 vi.mock("@earendil-works/pi-tui", async (importOriginal) => ({

@@ -1,9 +1,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { basename, dirname, join, resolve, sep } from "node:path";
-import { detectCapabilities, getTerminalColorMode, type TerminalColorMode } from "@earendil-works/pi-tui";
 import chalk from "chalk";
 import { APP_NAME, CONFIG_DIR_NAME } from "../config.ts";
-import { loadThemeFromPath, type Theme } from "../modes/interactive/theme/theme.ts";
 import type { ResourceDiagnostic } from "./diagnostics.ts";
 
 export type { ResourceCollision, ResourceDiagnostic } from "./diagnostics.ts";
@@ -11,9 +9,11 @@ export type { ResourceCollision, ResourceDiagnostic } from "./diagnostics.ts";
 import { canonicalizePath, isLocalPath, isPathWithin, pathsEqual, resolvePath } from "../utils/paths.ts";
 import { stripBom } from "../utils/text.ts";
 import { createEventBus, type EventBus } from "./event-bus.ts";
+import type { Theme } from "./extension-host-types.ts";
 import {
 	clearExtensionCache,
 	createExtensionRuntime,
+	type ExtensionModuleBindings,
 	loadExtensionFromFactory,
 	loadExtensionsCached,
 } from "./extensions/loader.ts";
@@ -187,6 +187,7 @@ export interface ResourceLoader {
 	getThemes(): { themes: Theme[]; diagnostics: ResourceDiagnostic[] };
 	getAgentsFiles(): { agentsFiles: Array<{ path: string; content: string }> };
 	getSystemPrompt(): string | undefined;
+	getDocumentation?(): string | undefined;
 	getSystemPromptSource(): { path: string } | undefined;
 	getAppendSystemPrompt(): string[];
 	getAppendSystemPromptSources(): Array<{ path: string }>;
@@ -303,6 +304,8 @@ export function loadProjectContextFiles(options: {
 	return contextFiles;
 }
 
+type ReadTheme = (path: string) => Theme;
+
 export interface DefaultResourceLoaderOptions {
 	cwd: string;
 	agentDir: string;
@@ -316,7 +319,9 @@ export interface DefaultResourceLoaderOptions {
 	additionalSkillPaths?: string[];
 	additionalPromptTemplatePaths?: string[];
 	additionalThemePaths?: string[];
+	createThemeReader?: (settings: SettingsManager) => ReadTheme;
 	extensionFactories?: InlineExtension[];
+	extensionModuleBindings?: ExtensionModuleBindings;
 	noExtensions?: boolean;
 	/** Built-in extensions not to load, by name (such as `mcp`), even when settings or `-e` enable them. */
 	disabledBuiltinExtensions?: string[];
@@ -325,6 +330,7 @@ export interface DefaultResourceLoaderOptions {
 	noThemes?: boolean;
 	noContextFiles?: boolean;
 	systemPrompt?: string;
+	documentation?: string;
 	appendSystemPrompt?: string[];
 	extensionsOverride?: (base: LoadExtensionsResult) => LoadExtensionsResult;
 	skillsOverride?: (base: { skills: Skill[]; diagnostics: ResourceDiagnostic[] }) => {
@@ -356,7 +362,9 @@ export class DefaultResourceLoader implements ResourceLoader {
 	private additionalSkillPaths: string[];
 	private additionalPromptTemplatePaths: string[];
 	private additionalThemePaths: string[];
+	private readonly createThemeReader?: (settings: SettingsManager) => ReadTheme;
 	private extensionFactories: InlineExtension[];
+	private readonly extensionModuleBindings?: ExtensionModuleBindings;
 	private builtinExtensions: Map<string, BuiltinExtension>;
 	private noExtensions: boolean;
 	private disabledBuiltinExtensions: Set<string>;
@@ -365,6 +373,7 @@ export class DefaultResourceLoader implements ResourceLoader {
 	private noThemes: boolean;
 	private noContextFiles: boolean;
 	private systemPromptSource?: string;
+	private readonly documentation?: string;
 	private appendSystemPromptSource?: string[];
 	private extensionsOverride?: (base: LoadExtensionsResult) => LoadExtensionsResult;
 	private skillsOverride?: (base: { skills: Skill[]; diagnostics: ResourceDiagnostic[] }) => {
@@ -412,6 +421,7 @@ export class DefaultResourceLoader implements ResourceLoader {
 		this.settingsManager = options.settingsManager ?? SettingsManager.create(this.cwd, this.agentDir);
 		this.eventBus = options.eventBus ?? createEventBus();
 		const factories = options.extensionFactories ?? [];
+		this.extensionModuleBindings = options.extensionModuleBindings;
 		this.extensionFactories = factories.filter((input) => !isBuiltinExtension(input));
 		this.builtinExtensions = new Map(factories.filter(isBuiltinExtension).map((input) => [input.name, input]));
 		this.packageManager = new DefaultPackageManager({
@@ -426,6 +436,7 @@ export class DefaultResourceLoader implements ResourceLoader {
 		this.additionalSkillPaths = options.additionalSkillPaths ?? [];
 		this.additionalPromptTemplatePaths = options.additionalPromptTemplatePaths ?? [];
 		this.additionalThemePaths = options.additionalThemePaths ?? [];
+		this.createThemeReader = options.createThemeReader;
 		this.noExtensions = options.noExtensions ?? false;
 		this.disabledBuiltinExtensions = new Set(options.disabledBuiltinExtensions);
 		this.noSkills = options.noSkills ?? false;
@@ -433,6 +444,7 @@ export class DefaultResourceLoader implements ResourceLoader {
 		this.noThemes = options.noThemes ?? false;
 		this.noContextFiles = options.noContextFiles ?? false;
 		this.systemPromptSource = options.systemPrompt;
+		this.documentation = options.documentation;
 		this.appendSystemPromptSource = options.appendSystemPrompt;
 		this.extensionsOverride = options.extensionsOverride;
 		this.skillsOverride = options.skillsOverride;
@@ -484,6 +496,10 @@ export class DefaultResourceLoader implements ResourceLoader {
 
 	getSystemPrompt(): string | undefined {
 		return this.systemPrompt;
+	}
+
+	getDocumentation(): string | undefined {
+		return this.documentation;
 	}
 
 	getSystemPromptSource(): { path: string } | undefined {
@@ -740,7 +756,13 @@ export class DefaultResourceLoader implements ResourceLoader {
 			resolvedPaths.installFailures,
 			cliExtensionPaths.installFailures,
 		);
-		const extensionsResult = await loadExtensionsCached(extensionPaths, this.cwd, this.eventBus);
+		const extensionsResult = await loadExtensionsCached(
+			extensionPaths,
+			this.cwd,
+			this.eventBus,
+			undefined,
+			this.extensionModuleBindings,
+		);
 		mergeExtensionWarnings(extensionsResult, [...installWarnings, ...packageWarnings]);
 		if (!options.includeInlineFactories) {
 			return extensionsResult;
@@ -771,6 +793,7 @@ export class DefaultResourceLoader implements ResourceLoader {
 			this.cwd,
 			this.eventBus,
 			runtime,
+			this.extensionModuleBindings,
 		);
 		for (const path of paths.filter(isBuiltinPath)) {
 			const builtin = this.builtinExtensions.get(path.slice(BUILTIN_PATH_PREFIX.length));
@@ -938,15 +961,10 @@ export class DefaultResourceLoader implements ResourceLoader {
 
 	private updateThemesFromPaths(themePaths: string[], metadataByPath?: Map<string, PathMetadata>): void {
 		let themesResult: { themes: Theme[]; diagnostics: ResourceDiagnostic[] };
-		if (this.noThemes && themePaths.length === 0) {
+		if (!this.createThemeReader || themePaths.length === 0) {
 			themesResult = { themes: [], diagnostics: [] };
 		} else {
-			// Theme construction only needs trueColor, so skip the unrelated tmux hyperlink probe.
-			const colorMode = getTerminalColorMode({
-				...detectCapabilities(() => false),
-				...this.settingsManager.getTerminalCapabilityOverrides(),
-			});
-			const loaded = this.loadThemes(themePaths, false, colorMode);
+			const loaded = this.loadThemes(themePaths, this.createThemeReader(this.settingsManager));
 			const deduped = this.dedupeThemes(loaded.themes);
 			themesResult = { themes: deduped.themes, diagnostics: [...loaded.diagnostics, ...deduped.diagnostics] };
 		}
@@ -1082,22 +1100,13 @@ export class DefaultResourceLoader implements ResourceLoader {
 
 	private loadThemes(
 		paths: string[],
-		includeDefaults: boolean,
-		colorMode: TerminalColorMode,
+		readTheme: ReadTheme,
 	): {
 		themes: Theme[];
 		diagnostics: ResourceDiagnostic[];
 	} {
 		const themes: Theme[] = [];
 		const diagnostics: ResourceDiagnostic[] = [];
-		if (includeDefaults) {
-			const defaultDirs = [join(this.agentDir, "themes"), join(this.cwd, CONFIG_DIR_NAME, "themes")];
-
-			for (const dir of defaultDirs) {
-				this.loadThemesFromDir(dir, themes, diagnostics, colorMode);
-			}
-		}
-
 		for (const p of paths) {
 			const resolved = this.resolveResourcePath(p);
 			if (!existsSync(resolved)) {
@@ -1108,9 +1117,9 @@ export class DefaultResourceLoader implements ResourceLoader {
 			try {
 				const stats = statSync(resolved);
 				if (stats.isDirectory()) {
-					this.loadThemesFromDir(resolved, themes, diagnostics, colorMode);
+					this.loadThemesFromDir(resolved, themes, diagnostics, readTheme);
 				} else if (stats.isFile() && resolved.endsWith(".json")) {
-					this.loadThemeFromFile(resolved, themes, diagnostics, colorMode);
+					this.loadThemeFromFile(resolved, themes, diagnostics, readTheme);
 				} else {
 					diagnostics.push({ type: "warning", message: "theme path is not a json file", path: resolved });
 				}
@@ -1127,7 +1136,7 @@ export class DefaultResourceLoader implements ResourceLoader {
 		dir: string,
 		themes: Theme[],
 		diagnostics: ResourceDiagnostic[],
-		colorMode: TerminalColorMode,
+		readTheme: ReadTheme,
 	): void {
 		if (!existsSync(dir)) {
 			return;
@@ -1150,7 +1159,7 @@ export class DefaultResourceLoader implements ResourceLoader {
 				if (!entry.name.endsWith(".json")) {
 					continue;
 				}
-				this.loadThemeFromFile(join(dir, entry.name), themes, diagnostics, colorMode);
+				this.loadThemeFromFile(join(dir, entry.name), themes, diagnostics, readTheme);
 			}
 		} catch (error) {
 			const message = error instanceof Error ? error.message : "failed to read theme directory";
@@ -1162,10 +1171,10 @@ export class DefaultResourceLoader implements ResourceLoader {
 		filePath: string,
 		themes: Theme[],
 		diagnostics: ResourceDiagnostic[],
-		colorMode: TerminalColorMode,
+		readTheme: ReadTheme,
 	): void {
 		try {
-			themes.push(loadThemeFromPath(filePath, colorMode));
+			themes.push(readTheme(filePath));
 		} catch (error) {
 			const message = error instanceof Error ? error.message : "failed to load theme";
 			diagnostics.push({ type: "warning", message, path: filePath });

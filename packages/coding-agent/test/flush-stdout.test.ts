@@ -2,7 +2,7 @@ import { spawn } from "node:child_process";
 import { once } from "node:events";
 import { fileURLToPath } from "node:url";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { flushStdout } from "../src/utils/flush-stdout.ts";
+import { flushStdout } from "../../tui/src/host/utils/flush-stdout.ts";
 
 // #12133: process.exit() dropped queued terminal mode resets; exits now wait for stdout first.
 describe("flushStdout", () => {

@@ -1,15 +1,15 @@
 import { type TUI, visibleWidth } from "@earendil-works/pi-tui";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { KeybindingsManager } from "../src/core/keybindings.ts";
-import { CustomEditor } from "../src/modes/interactive/components/custom-editor.ts";
+import { KeybindingsManager } from "../../tui/src/host/core/keybindings.ts";
+import { CustomEditor } from "../../tui/src/host/modes/interactive/components/custom-editor.ts";
 import {
 	BranchSummaryStatusIndicator,
 	CompactionStatusIndicator,
 	IdleStatus,
 	RetryStatusIndicator,
 	WorkingStatusIndicator,
-} from "../src/modes/interactive/components/status-indicator.ts";
-import { getEditorTheme, initTheme, theme } from "../src/modes/interactive/theme/theme.ts";
+} from "../../tui/src/host/modes/interactive/components/status-indicator.ts";
+import { getEditorTheme, initTheme, theme } from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import { stripAnsi } from "../src/utils/ansi.ts";
 
 describe("status indicators", () => {

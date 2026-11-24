@@ -3,9 +3,13 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { InMemoryModelsStore } from "@earendil-works/pi-ai";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { parseArgs } from "../src/cli/args.ts";
-import { checkProviderAuth, createAuthCheckModelRuntime, getProviderCredential } from "../src/cli/auth-check.ts";
-import { parseAuthCommand } from "../src/cli/auth-command.ts";
+import { parseArgs } from "../../tui/src/host/cli/args.ts";
+import {
+	checkProviderAuth,
+	createAuthCheckModelRuntime,
+	getProviderCredential,
+} from "../../tui/src/host/cli/auth-check.ts";
+import { parseAuthCommand } from "../../tui/src/host/cli/auth-command.ts";
 import { AuthStorage, ReadOnlyAuthStorage } from "../src/core/auth-storage.ts";
 import { ModelRuntime } from "../src/core/model-runtime.ts";
 

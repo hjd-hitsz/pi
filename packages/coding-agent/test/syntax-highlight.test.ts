@@ -6,13 +6,13 @@ import {
 	highlightCode,
 	initTheme,
 	theme,
-} from "../src/modes/interactive/theme/theme.ts";
+} from "../../tui/src/host/modes/interactive/theme/theme.ts";
 import {
 	highlight,
 	loadAllHighlightLanguages,
 	renderHighlightedHtml,
 	supportsLanguage,
-} from "../src/utils/syntax-highlight.ts";
+} from "../../tui/src/host/utils/syntax-highlight.ts";
 
 const eagerLanguages = [
 	"python",

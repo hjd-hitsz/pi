@@ -1,6 +1,6 @@
 import { type AssistantMessage, fauxAssistantMessage } from "@earendil-works/pi-ai";
 import { describe, expect, test, vi } from "vitest";
-import { formatCrashExtensionHint, InteractiveMode } from "../src/modes/interactive/interactive-mode.ts";
+import { formatCrashExtensionHint, InteractiveMode } from "../../tui/src/host/modes/interactive/interactive-mode.ts";
 
 type BugReportHintContext = {
 	suggestBugReport(): void;

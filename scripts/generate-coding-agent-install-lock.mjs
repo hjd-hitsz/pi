@@ -375,7 +375,7 @@ function generateInstallLock() {
 	}
 
 	const lockPackages = rootLock.packages;
-	const codingAgentPackage = readJson(join(codingAgentDir, "package.json"));
+	const codingAgentPackage = readJson(join(repoRoot, "packages/tui/package.json"));
 	const installerPackageJson = createInstallerPackageJson(codingAgentPackage);
 	const internalWorkspaces = getInternalWorkspaces(lockPackages);
 	const installLockPackages = {

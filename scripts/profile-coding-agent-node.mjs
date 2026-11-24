@@ -7,10 +7,10 @@ import { fileURLToPath } from "node:url";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(__dirname, "..");
-const packageDir = join(repoRoot, "packages", "coding-agent");
-const distCliPath = join(packageDir, "dist", "cli.js");
-const bundledDistCliPath = join(packageDir, "dist", "bundle", "cli.js");
-const srcCliPath = join(packageDir, "src", "cli.ts");
+const packageDir = join(repoRoot, "packages", "tui");
+const distCliPath = join(packageDir, "dist", "host", "cli.js");
+const bundledDistCliPath = join(packageDir, "dist", "standalone", "cli.js");
+const srcCliPath = join(packageDir, "src", "host", "cli.ts");
 const defaultNodeProfileDir = join(repoRoot, "profiles-node");
 const defaultBunProfileDir = join(repoRoot, "profiles-bun");
 const agentDirEnvName = "PI_CODING_AGENT_DIR";
@@ -298,8 +298,6 @@ async function runBuild(bundle) {
 				"run",
 				"build",
 				"--workspace",
-				"packages/tui",
-				"--workspace",
 				"packages/telemetry",
 				"--workspace",
 				"packages/ai",
@@ -309,7 +307,11 @@ async function runBuild(bundle) {
 		},
 		{
 			label: "Coding-agent build",
-			args: ["run", bundle ? "build" : "build:unbundled", "--workspace", "packages/coding-agent"],
+			args: ["run", "build", "--workspace", "packages/coding-agent"],
+		},
+		{
+			label: "TUI host build",
+			args: ["run", bundle ? "build:bundle" : "build:unbundled", "--workspace", "packages/tui"],
 		},
 	];
 
@@ -577,7 +579,7 @@ async function main() {
 	}
 	if (runtime === "bun") {
 		process.stdout.write(
-			`Using Bun runtime with ${options.mode === "rpc" ? "packages/coding-agent/src/cli.ts --mode rpc" : "packages/coding-agent/src/cli.ts"}\n`,
+			`Using Bun runtime with ${srcCliPath}${options.mode === "rpc" ? " --mode rpc" : ""}\n`,
 		);
 	}
 
